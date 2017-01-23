@@ -1,5 +1,8 @@
+#Eclipse/NetBeans Build Directories
 /bin/
-/nbproject/private/
-*.DS_Store
 /build/
+/nbproject/private/
+
+#Peanut files.
+*.DS_Store
 *.log*
