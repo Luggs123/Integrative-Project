@@ -23,6 +23,9 @@ public class Main extends Application {
 	List<Mover> allMovers = new ArrayList<>();
 
 	AnimationTimer gameLoop;
+	private final long[] frameTimes = new long[100];
+    private int frameTimeIndex = 0 ;
+    private boolean arrayFilled = false ;
 
 	Scene scene;
 
@@ -95,6 +98,18 @@ public class Main extends Application {
 				// update in fx scene
 				allMovers.forEach(Mover::display);
 
+				long oldFrameTime = frameTimes[frameTimeIndex] ;
+                frameTimes[frameTimeIndex] = now ;
+                frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length ;
+                if (frameTimeIndex == 0) {
+                    arrayFilled = true ;
+                }
+                if (arrayFilled) {
+                    long elapsedNanos = now - oldFrameTime ;
+                    long elapsedNanosPerFrame = elapsedNanos / frameTimes.length ;
+                    double frameRate = 1_000_000_000.0 / elapsedNanosPerFrame ;
+                    System.out.printf("\nCurrent frame rate: %.3f", frameRate);
+                }
 			}
 		};
 
@@ -213,8 +228,8 @@ class Mover extends Circle {
 	}
 	
 	public void display() {
-		setCenterX( location.getX());
-		setCenterY( location.getY());
+		super.setCenterX(this.location.getX());
+		super.setCenterY(this.location.getY());
 	}	
 }
 
@@ -223,7 +238,7 @@ class Settings {
 	public static double SCENE_WIDTH = 1280;
 	public static double SCENE_HEIGHT = 720;
 
-	public static int MOVER_COUNT = 600;
+	public static int MOVER_COUNT = 200;
 
 	public static double MOVER_MAX_SPEED = 20;
 
