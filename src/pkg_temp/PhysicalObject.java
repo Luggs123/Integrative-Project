@@ -122,7 +122,7 @@ public abstract class PhysicalObject extends Circle {
 			this.setVelocity(this.getVelocity().normalize());
 			this.setVelocity(this.getVelocity().multiply(mag));
 		}
-
+		
 		// Change location depending on velocity.
 		this.setPosition(this.getVelocity().add(velocity));
 

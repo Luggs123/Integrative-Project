@@ -95,6 +95,7 @@ public class LoopTest extends Application {
 				// update in fx scene
 				allMovers.forEach(AccelerationCircle::display);
 
+				// Calculating frame rate.
 				long oldFrameTime = frameTimes[frameTimeIndex];
                 frameTimes[frameTimeIndex] = now;
                 frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length;
