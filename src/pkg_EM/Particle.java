@@ -2,27 +2,66 @@ package pkg_EM;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
+import pkg_temp.PhysicalObject;
+import backend.Settings;
 
-public class Particle extends pkg_temp.PhysicalObject{
+public class Particle extends PhysicalObject {
 	private boolean selected = false;
 	private double mass;
 	private double charge;
 	
-	public Particle(Point2D position, Point2D velocity, Point2D acceleration, Image image) {
-		super(position, velocity, acceleration, image);
-		// TODO Auto-generated constructor stub
+	public Particle(Point2D position, Image image, double mass, double charge) {
+		super(position, image);
+		this.mass = mass;
+		this.charge = charge;
 	}
 
 	@Override
 	public void applyForce(Point2D force) {
-		// TODO Auto-generated method stub
-		
+		this.getAcceleration().add(force.multiply(1.0 / this.getMass()));
 	}
 	
-	public Point2D attract(Particle p2) {
-		return null;
-		// TODO Write attract method
+	/**
+	 * Applies an attraction onto an object based on the distance from another specified object.
+	 * @param m Another object that inherits PhysicalObject.
+	 * @return A {@link Point2D} object.
+	 */
+	public Point2D attract(Particle m) {
+
+		// Force direction.
+		Point2D force = this.getPosition().subtract(m.getPosition());
+		double distance = force.magnitude();
 		
+		// Constrain movement.
+		distance = constrain(distance, Settings.ATTRACTION_DISTANCE_MIN, Settings.ATTRACTION_DISTANCE_MAX);
+		
+		force = force.normalize();
+
+		// Magnitude of the force.
+		double strength = (Settings.GRAVITATIONAL_CONSTANT * this.getMass() * m.getMass()) / (distance * distance);
+		force = force.multiply(strength);
+
+		return force;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	public double getCharge() {
+		return charge;
+	}
+
+	public void setCharge(double charge) {
+		this.charge = charge;
+	}
+
+	public double getMass() {
+		return mass;
 	}
 
 }

@@ -8,27 +8,27 @@ public abstract class PhysicalObject extends Circle {
 	/**
 	 * The position of the object.
 	 **/
-	private Point2D position;
+	protected Point2D position;
 	
 	/**
 	 * The velocity of the object.
 	 **/
-	private Point2D velocity;
+	protected Point2D velocity;
 	
 	/**
 	 * The acceleration of the object.
 	 **/
-	private Point2D acceleration;
+	protected Point2D acceleration;
 	
 	/**
 	 * The image that will represent the object.
 	 **/
-	private Image image;
+	protected Image image;
 
-	public PhysicalObject(Point2D position, Point2D velocity, Point2D acceleration, Image image) {
+	public PhysicalObject(Point2D position, Image image) {
 		this.position = position;
-		this.velocity = velocity;
-		this.acceleration = acceleration;
+		this.velocity = Point2D.ZERO;
+		this.acceleration = Point2D.ZERO;
 		this.image = image;
 	}
 
@@ -66,28 +66,7 @@ public abstract class PhysicalObject extends Circle {
 	 */
 	public abstract void applyForce(Point2D force);
 
-//	/**
-//	 * Applies an attraction onto an object based on the distance from another specified object.
-//	 * @param m Another object that inherits PhysicalObject.
-//	 * @return A {@link Point2D} object.
-//	 */
-//	public Point2D attract(PhysicalObject m) {
-//
-//		// Force direction.
-//		Point2D force = this.location.subtract(m.location);
-//		double distance = force.magnitude();
-//		
-//		// Constrain movement.
-//		distance = constrain(distance, Settings.ATTRACTION_DISTANCE_MIN, Settings.ATTRACTION_DISTANCE_MAX);
-//		
-//		force = force.normalize();
-//
-//		// Magnitude of the force.
-//		double strength = (Settings.GRAVITATIONAL_CONSTANT * mass * m.mass) / (distance * distance);
-//		force = force.multiply(strength);
-//
-//		return force;
-//	}
+
 
 	/**
 	 * Constrains a value between a given minimum and maximum.
