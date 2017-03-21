@@ -11,10 +11,8 @@ public class ClsHandlers implements EventHandler<ActionEvent> {
 		Object source = event.getSource();
 		/*** ClsMain ***/
 		
-		// Exit application
-		/*if (source == ClsMain.btnExit) {
+		if (source == ClsMain.test) {
 			Platform.exit();
-		} else*/ if (source == ClsMain.test) {
 		}
 	}
 }
