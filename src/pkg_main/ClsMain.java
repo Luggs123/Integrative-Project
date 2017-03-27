@@ -19,9 +19,6 @@ import javafx.stage.Stage;
 
 public class ClsMain extends Application implements IConstants {
 	
-	// Main Scene
-	private static Stage primaryStage = new Stage();
-	
 	protected static Pane winMain = new VBox();
 	protected static Scene sceneMain = new Scene(winMain, 1200, 720);
 	
@@ -29,19 +26,24 @@ public class ClsMain extends Application implements IConstants {
 	public static MenuBar mainMenu = new MenuBar();
 	
 	public static Menu menuMech = new Menu("Mechanics");
+	public static AppMenuItem menuProj = new AppMenuItem("Projectile Motion");
+	
+	
 	public static Menu menuWav = new Menu("Waves, Optics & Modern Physics");
 	public static Menu menuEM = new Menu("Electricity & Magnetism");
 	public static Menu menuProg = new Menu("Program");
 	
 	public static AppMenuItem test = new AppMenuItem("Test");
 	
-	// Set the primaryStage to point to a different scene.
-	public static void updateScene(Scene newScene) {
-		primaryStage.setScene(newScene);
+	// Set the main window to point to a different scene.
+	public static void updatePane(Pane newPane) {
+		winMain.getChildren().clear();
+		
+		winMain.getChildren().addAll(mainMenu, newPane);
 	}
 
 	@Override
-	public void start(Stage stage) {
+	public void start(Stage primaryStage) {
 		
 		// Create the welcome message.
 		Label lblGreeting = new Label();
@@ -50,10 +52,8 @@ public class ClsMain extends Application implements IConstants {
 		lblGreeting.setTranslateX(500);
 		lblGreeting.setTranslateY(500);
 		
-		
 		// Add the menu components to the main window.
-		menuMech.getItems().add(test);
-		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
+		initilizeMenuBar();
 		winMain.getChildren().addAll(mainMenu, lblGreeting);
 		
 		winMain.setPrefWidth(800);
@@ -66,5 +66,12 @@ public class ClsMain extends Application implements IConstants {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	private static void initilizeMenuBar() {
+		menuMech.getItems().addAll(menuProj, test);
+		
+		mainMenu.setStyle("-fx-mainmenubar");
+		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 	}
 }
