@@ -2,6 +2,7 @@ package pkg_temp;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 
 public abstract class PhysicalObject extends Circle {
@@ -24,12 +25,21 @@ public abstract class PhysicalObject extends Circle {
 	 * The image that will represent the object.
 	 **/
 	protected Image image;
+	protected ImageView imageView;
 
-	public PhysicalObject(Point2D position, Image image) {
+	public PhysicalObject(Point2D position, Point2D velocity, Image image) {
 		this.position = position;
-		this.velocity = Point2D.ZERO;
+		this.velocity = velocity;
 		this.acceleration = Point2D.ZERO;
 		this.image = image;
+		
+		this.imageView = new ImageView(image);
+		this.imageView.setFitWidth(50);
+		this.imageView.setFitHeight(50);
+	}
+	
+	public PhysicalObject(Point2D position, Image image) {
+		this(position, Point2D.ZERO, image);
 	}
 
 	public Point2D getPosition() {
@@ -58,6 +68,10 @@ public abstract class PhysicalObject extends Circle {
 
 	public Image getImage() {
 		return image;
+	}
+	
+	public ImageView getImageView() {
+		return imageView;
 	}
 
 	/**
@@ -113,9 +127,9 @@ public abstract class PhysicalObject extends Circle {
 	 * Update the position of the object on a screen relative to its current position.
 	 */
 	public void update() {
-		super.setCenterX(this.getPosition().getX());
-		super.setCenterY(this.getPosition().getY());
-	}	
+		this.getImageView().setLayoutX(this.getPosition().getX() - this.getImageView().getFitWidth() / 2);
+		this.getImageView().setLayoutY(this.getPosition().getY() - this.getImageView().getFitHeight() / 2);
+	}
 }
 
 class Settings {

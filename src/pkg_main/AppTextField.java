@@ -18,7 +18,7 @@ public class AppTextField extends TextField {
 		this.fieldName = fieldName;
 	}
 	
-	public boolean getInt(int numRef) {
+	public boolean tryGetInt(int numRef) {
 		int num;
 		try {
 			num = Integer.parseInt(this.getText());
@@ -36,7 +36,7 @@ public class AppTextField extends TextField {
 		return true;
 	}
 	
-	public boolean getFloat(double numRef) {
+	public boolean tryGetFloat(double numRef) {
 		double num;
 		try {
 			num = Double.parseDouble(this.getText());

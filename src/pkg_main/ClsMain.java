@@ -7,6 +7,8 @@
 
 package pkg_main;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -20,7 +22,7 @@ import javafx.stage.Stage;
 public class ClsMain extends Application implements IConstants {
 	
 	protected static Pane winMain = new VBox();
-	protected static Scene sceneMain = new Scene(winMain, 1200, 720);
+	protected static Scene sceneMain = new Scene(winMain, WINDOW_WIDTH, WINDOW_HEIGHT);
 	
 	// Menu bar.
 	public static MenuBar mainMenu = new MenuBar();
@@ -70,8 +72,11 @@ public class ClsMain extends Application implements IConstants {
 	
 	private static void initilizeMenuBar() {
 		menuMech.getItems().addAll(menuProj, test);
-		
-		mainMenu.setStyle("-fx-mainmenubar");
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
+	}
+	
+	// Returns a file from ../ProjectDirectory/Assets/
+	public static String resourceLoader(String filename) {
+		return new File("Assets/" + filename).toURI().toString();
 	}
 }
