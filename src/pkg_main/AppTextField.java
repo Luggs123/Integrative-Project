@@ -18,38 +18,34 @@ public class AppTextField extends TextField {
 		this.fieldName = fieldName;
 	}
 	
-	public boolean tryGetInt(int numRef) {
-		int num;
+	public boolean tryGetInt() {
 		try {
-			num = Integer.parseInt(this.getText());
+			Integer.parseInt(this.getText());
 		} catch (NumberFormatException nfe) {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error bitch");
+			alert.setTitle("Input Value Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("I have a great message for you!");
+			alert.setContentText("The value inputed for " + this.fieldName + " is not an integer.");
 
 			alert.showAndWait();
 			return false;
 		}
-		numRef = num;
 		
 		return true;
 	}
 	
-	public boolean tryGetFloat(double numRef) {
-		double num;
+	public boolean tryGetFloat() {
 		try {
-			num = Double.parseDouble(this.getText());
+			Float.parseFloat(this.getText());
 		} catch (NumberFormatException nfe) {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error bitch");
+			alert.setTitle("Input Value Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("I have a great message for you!");
+			alert.setContentText("The value inputed for " + this.fieldName + " is not a number.");
 
 			alert.showAndWait();
 			return false;
 		}
-		numRef = num;
 		
 		return true;
 	}

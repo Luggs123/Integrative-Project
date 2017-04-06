@@ -63,6 +63,7 @@ public class ClsMain extends Application implements IConstants {
 		// Title the window and display it to the user.
 		primaryStage.setTitle("Integrative Project");
 		primaryStage.setScene(sceneMain);
+		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 

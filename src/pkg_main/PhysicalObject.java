@@ -1,4 +1,4 @@
-package pkg_temp;
+package pkg_main;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
@@ -106,27 +106,23 @@ public abstract class PhysicalObject extends Circle {
 	public void move() {
 		// Set velocity depending on acceleration.
 		this.setVelocity(this.getVelocity().add(acceleration));
-
-		// Limit velocity to max speed.
-		double mag = this.getVelocity().magnitude();
-		
-		if (mag > Settings.MOVER_MAX_SPEED) {
-			mag = constrain(mag, 0, Settings.MOVER_MAX_SPEED);
-			this.setVelocity(this.getVelocity().normalize());
-			this.setVelocity(this.getVelocity().multiply(mag));
-		}
 		
 		// Change location depending on velocity.
-		this.setPosition(this.getVelocity().add(velocity));
+		this.setPosition(this.getPosition().add(velocity));
 
 		// Clear the acceleration.
 		this.setAcceleration(Point2D.ZERO);
 	}
 	
 	/**
-	 * Update the position of the object on a screen relative to its current position.
+	 * Update the position of the object's image on a screen relative to its current position.
 	 */
 	public void update() {
+		// Update circle position.
+		this.setCenterX(this.getPosition().getX());
+		this.setCenterY(this.getPosition().getY());
+		
+		// Update image position.
 		this.getImageView().setLayoutX(this.getPosition().getX() - this.getImageView().getFitWidth() / 2);
 		this.getImageView().setLayoutY(this.getPosition().getY() - this.getImageView().getFitHeight() / 2);
 	}

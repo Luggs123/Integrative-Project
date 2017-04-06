@@ -2,7 +2,7 @@ package pkg_EM;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
-import pkg_temp.PhysicalObject;
+import pkg_main.PhysicalObject;
 import backend.Settings;
 
 public class Particle extends PhysicalObject {

@@ -19,7 +19,9 @@ public class ClsHandlers implements EventHandler<ActionEvent> {
 			ClsMain.updatePane(ClsProj.drawScene());
 			
 		} else if (source == ClsProj.btnStart) {
-			ClsProj.doBtnStart();
+			ClsProj.doBtnStart();	
+		} else if (source == ClsProj.btnPause) {
+			ClsProj.doBtnPause();	
 		}
 	}
 }
