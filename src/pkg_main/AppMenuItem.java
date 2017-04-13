@@ -6,11 +6,11 @@ public class AppMenuItem extends MenuItem {
 	
 	public AppMenuItem(String displayText) {
 		super(displayText);
-		this.setOnAction(new ClsHandlers());
+		this.setOnAction(new ClsMenuHandler());
 	}
 	
 	public AppMenuItem() {
 		super();
-		this.setOnAction(new ClsHandlers());
+		this.setOnAction(new ClsMenuHandler());
 	}
 }

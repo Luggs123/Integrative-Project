@@ -18,6 +18,8 @@ public class AppTextField extends TextField {
 		this.fieldName = fieldName;
 	}
 	
+	// Attempts to parse an integer from the string's text property.
+	// Returns false and displays an alert dialog if a NumberFormatException occurs.
 	public boolean tryGetInt() {
 		try {
 			Integer.parseInt(this.getText());

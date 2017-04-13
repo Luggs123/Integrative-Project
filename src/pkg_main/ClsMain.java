@@ -55,12 +55,16 @@ public class ClsMain extends Application implements IConstants {
 		lblGreeting.setTranslateY(500);
 		
 		// Add the menu components to the main window.
-		initilizeMenuBar();
+		mainMenu.getStyleClass().add("menu-bar");
+		menuMech.getItems().addAll(menuProj, test);
+		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
+		
 		winMain.getChildren().addAll(mainMenu, lblGreeting);
 		
 		winMain.setPrefWidth(800);
 
 		// Title the window and display it to the user.
+		sceneMain.getStylesheets().add(resourceLoader("style.css")); 
 		primaryStage.setTitle("Integrative Project");
 		primaryStage.setScene(sceneMain);
 		primaryStage.setResizable(false);
@@ -69,11 +73,6 @@ public class ClsMain extends Application implements IConstants {
 
 	public static void main(String[] args) {
 		launch(args);
-	}
-	
-	private static void initilizeMenuBar() {
-		menuMech.getItems().addAll(menuProj, test);
-		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 	}
 	
 	// Returns a file from ../ProjectDirectory/Assets/

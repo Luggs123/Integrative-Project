@@ -1,12 +1,18 @@
 package pkg_M;
 
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
@@ -21,15 +27,16 @@ import pkg_main.ClsMain;
 
 public class ClsProj implements IProjectile, pkg_main.IConstants {
 	
-	private static AnimationTimer mainLoop;
+	public static AnimationTimer mainLoop;
 	private static Ball cannonBall;
 	private static boolean isPaused;
+	private static long initialTime;
 	
 	// Windows
 	private static VBox winProj;
 	private static Pane winDisplay;
 	private static HBox winButt;
-	private static Pane winInfo;
+	private static HBox winInfo;
 	private static Pane winHelp;
 	
 	// Buttons
@@ -44,9 +51,15 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	private static AppTextField txtGrav;
 	private static AppTextField txtVel;
 	
+	// Labels
+	private static Label lblHelp;
+	
 	// Charts
-	private static LineChart<DoubleProperty, DoubleProperty> chrtVel;
-	private static LineChart<DoubleProperty, DoubleProperty> chrtAcc;
+	private static LineChart<Number, Number> chrtVel;
+	private static XYChart.Series<Number, Number> seriesVel;
+	private static LongProperty elapsedTime;
+	private static LongProperty timeUntilGraph;
+	private static FloatProperty previousPos;
 	
 	public static Pane drawScene() {
 		
@@ -56,8 +69,14 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		// Sub Windows
 		winDisplay = new Pane();
 		winButt = new HBox(30);
-		winInfo = new Pane();
+		winInfo = new HBox();
 		winHelp = new Pane();
+		
+		// Add CSS classes.
+		winDisplay.getStyleClass().add("win-display");
+		winButt.getStyleClass().add("win-butt");
+		winInfo.getStyleClass().add("win-info");
+		winHelp.getStyleClass().add("win-help");
 		
 		winButt.setStyle("-fx-border-color: black");
 		
@@ -76,12 +95,19 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		txtAng = new AppTextField("Angle of Launch");
 		txtGrav = new AppTextField("Gravitational Constant");
 		txtVel = new AppTextField("Initial Velocity");
+		txtAng.setText("45");
+		txtGrav.setText("0.03");
+		txtVel.setText("5");
 		
 		btnStart = new AppButton("Start");
 		btnDone = new AppButton("Done");
 		btnPause = new AppButton("Pause");
 		btnReset = new AppButton("Reset");
 		btnHelp = new AppButton("Help");
+		
+		btnDone.setDisable(true);
+		btnPause.setDisable(true);
+		btnReset.setDisable(true);
 		
 		// Add buttons and labels to winButt.
 		VBox vLabels = new VBox(30);
@@ -105,8 +131,30 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winButt.setMinWidth(WINDOW_WIDTH / 2);
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
+		// Setup info window.
+		final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        chrtVel = new LineChart<Number, Number>(xAxis, yAxis);
+        chrtVel.setAnimated(false);
+		
+		seriesVel = new XYChart.Series<Number, Number>();
+		seriesVel.setName("Velocity over Time");
+		chrtVel.getData().add(seriesVel);
+		
+		elapsedTime = new SimpleLongProperty();
+		timeUntilGraph = new SimpleLongProperty();
+		previousPos = new SimpleFloatProperty();
+		
+		winInfo.getChildren().addAll(chrtVel);
+		
+		// Help window.
+		lblHelp = new Label();
+		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
+		winHelp.getChildren().add(lblHelp);
+		
 		// Add all the panes to the main window.
-		HBox separator = new HBox();
+		final HBox separator = new HBox();
+		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
 		winProj.getChildren().addAll(winDisplay, separator, winHelp);
@@ -116,8 +164,10 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		return winProj;
 	}
 	
+	// Re-paint the scene in order to update the position of objects during the animation.
 	private static void redrawScene() {
 		HBox separator = new HBox();
+		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
 		winProj.getChildren().clear();
@@ -177,10 +227,14 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			return;
 		}
 		
+		// Initialize position of the ball.
+		initialTime = System.currentTimeMillis();
+		
 		Point2D initialPos = new Point2D(40, WINDOW_HEIGHT / 2);
 		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
+		Image ballImg = new Image(ClsMain.resourceLoader("Sphere.png"));
 		
-		cannonBall = new Ball(initialPos, initialVel, new Image(ClsMain.resourceLoader("Sphere.png")));
+		cannonBall = new Ball(initialPos, initialVel, ballImg);
 		cannonBall.update();
 		
 		Group dispGroup = new Group(cannonBall.getImageView());
@@ -188,24 +242,39 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winDisplay.getChildren().add(dispGroup);
 		redrawScene();
 		
+		// Get acceleration vector.
 		Point2D acceleration = new Point2D(0, gravityConst);
 		
+		// Disable start button and enable the rest.
+		btnStart.setDisable(true);
+		btnDone.setDisable(false);
+		btnPause.setDisable(false);
+		btnReset.setDisable(false);
+		
+		lblHelp.setText("Staring the animation.");
+		
+		// Generate main animation loop.
 		isPaused = false;
 		mainLoop = new AnimationTimer() {
 
 			@Override
 			public void handle(long now) {
-				// Check if the animation is paused or finished.
-				if (btnDone.isPressed()) {
-					winDisplay.getChildren().clear();
-					mainLoop.stop();
-				} else if (btnPause.isPressed() && btnPause.getText().equals("Pause")) {
-					btnDone.setDisable(true);
-					btnPause.setText("Resume");
-					mainLoop.stop();
-				}
-				
+				// TODO: Fix initialTime.
 				if (!isPaused) {
+					// Graph the current data.
+					elapsedTime.setValue(System.currentTimeMillis() - initialTime);
+					if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
+						timeUntilGraph.add(400);
+						
+						FloatProperty position = new SimpleFloatProperty();
+						position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
+						
+						NumberBinding velocity = position.subtract(previousPos).divide(400);
+						
+						seriesVel.getData().add(new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue()));
+						previousPos = position;
+					}
+					
 					// Apply gravitational acceleration.
 					cannonBall.applyForce(acceleration);
 					cannonBall.move();
@@ -218,11 +287,52 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		mainLoop.start();
 	}
 	
+	// User presses btnDone.
+	public static void doBtnDone() {
+		// Clear all animation data.
+		winDisplay.getChildren().clear();
+		seriesVel.getData().clear();
+		previousPos.setValue(0);
+		
+		// Enable start button and disable rest.
+		btnStart.setDisable(false);
+		btnDone.setDisable(true);
+		btnPause.setDisable(true);
+		btnReset.setDisable(true);
+		
+		mainLoop.stop();
+	}
+	
+	// User presses btnPause.
 	public static void doBtnPause() {
-		if (btnPause.getText().equals("Resume")) {
+		isPaused = !isPaused;
+		
+		if (isPaused) {
+			btnPause.setText("Resume");
+			btnDone.setDisable(true);
+			mainLoop.stop();
+		} else {
 			btnPause.setText("Pause");
 			btnDone.setDisable(false);
 			mainLoop.start();
 		}
+	}
+	
+	// User presses btnReset.
+	public static void doBtnReset() {
+		doBtnDone();
+		doBtnStart();
+	}
+	
+	// User presses btnReset.
+	public static void doBtnHelp() {
+		// Displays an information alert.
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle(null);
+		alert.setHeaderText(null);
+		alert.setContentText("This animation will launch a cannon ball at a specified angle and velocity."
+				+ NEWLINE + "The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
+
+		alert.showAndWait();
 	}
 }

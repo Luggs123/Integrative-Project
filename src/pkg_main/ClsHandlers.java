@@ -3,25 +3,48 @@ package pkg_main;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import pkg_M.ClsProj;
 
-public class ClsHandlers implements EventHandler<ActionEvent> {
+// Button Handlers
+public class ClsHandlers implements EventHandler<MouseEvent> {
+
+	@Override
+	public void handle(MouseEvent event) {
+		Object source = event.getSource();
+		/*** Menu Items ***/
+		
+		if (source == ClsProj.btnStart) {
+			ClsProj.doBtnStart();
+			
+		} else if (source == ClsProj.btnDone) {
+			ClsProj.doBtnDone();
+			
+		} else if (source == ClsProj.btnPause) {
+			ClsProj.doBtnPause();
+			
+		} else if (source == ClsProj.btnReset) {
+			ClsProj.doBtnReset();
+		
+		} else if (source == ClsProj.btnHelp) {
+			ClsProj.doBtnHelp();
+		}
+	}
+}
+
+// Menu Item Handlers
+class ClsMenuHandler implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
 		Object source = event.getSource();
-		/*** Menu Items ***/
 		
-		if (source == ClsMain.test) {
+		if (source == ClsMain.menuProj) {
+			ClsMain.updatePane(ClsProj.drawScene());
+
+		} else if (source == ClsMain.test) {
 			Platform.exit();
 			
-		} else if (source == ClsMain.menuProj) {
-			ClsMain.updatePane(ClsProj.drawScene());
-			
-		} else if (source == ClsProj.btnStart) {
-			ClsProj.doBtnStart();	
-		} else if (source == ClsProj.btnPause) {
-			ClsProj.doBtnPause();	
 		}
 	}
 }
