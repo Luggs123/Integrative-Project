@@ -35,7 +35,7 @@ public class ClsMain extends Application implements IConstants {
 	public static Menu menuEM = new Menu("Electricity & Magnetism");
 	public static Menu menuProg = new Menu("Program");
 	
-	public static AppMenuItem test = new AppMenuItem("Test");
+	public static AppMenuItem menuExit = new AppMenuItem("Exit Program");
 	
 	// Set the main window to point to a different scene.
 	public static void updatePane(Pane newPane) {
@@ -55,8 +55,8 @@ public class ClsMain extends Application implements IConstants {
 		lblGreeting.setTranslateY(500);
 		
 		// Add the menu components to the main window.
-		mainMenu.getStyleClass().add("menu-bar");
-		menuMech.getItems().addAll(menuProj, test);
+		menuMech.getItems().addAll(menuProj);
+		menuProg.getItems().add(menuExit);
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 		
 		winMain.getChildren().addAll(mainMenu, lblGreeting);

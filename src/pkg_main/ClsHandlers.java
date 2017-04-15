@@ -12,8 +12,8 @@ public class ClsHandlers implements EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		Object source = event.getSource();
-		/*** Menu Items ***/
 		
+		// Projectile Motion
 		if (source == ClsProj.btnStart) {
 			ClsProj.doBtnStart();
 			
@@ -42,7 +42,7 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 		if (source == ClsMain.menuProj) {
 			ClsMain.updatePane(ClsProj.drawScene());
 
-		} else if (source == ClsMain.test) {
+		} else if (source == ClsMain.menuExit) {
 			Platform.exit();
 			
 		}

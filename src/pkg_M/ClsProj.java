@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
@@ -78,8 +79,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winInfo.getStyleClass().add("win-info");
 		winHelp.getStyleClass().add("win-help");
 		
-		winButt.setStyle("-fx-border-color: black");
-		
 		// Setup animation window.
 		winDisplay.setPrefWidth(WINDOW_WIDTH);
 		winDisplay.setPrefHeight(WINDOW_HEIGHT / 2);
@@ -128,7 +127,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		vButtons.setPadding(new Insets(35));
 		vButtons.getChildren().addAll(buttonLayout1, buttonLayout2);
 		
-		winButt.setMinWidth(WINDOW_WIDTH / 2);
+		winButt.setPrefWidth(WINDOW_WIDTH / 2);
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
 		// Setup info window.
@@ -145,6 +144,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		timeUntilGraph = new SimpleLongProperty();
 		previousPos = new SimpleFloatProperty();
 		
+		winInfo.setPrefWidth(WINDOW_WIDTH / 2);
 		winInfo.getChildren().addAll(chrtVel);
 		
 		// Help window.
@@ -176,6 +176,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		ClsMain.updatePane(winProj);
 	}
 	
+	// TODO: Make ball spin.
 	// User presses btnStart.
 	public static void doBtnStart() {
 		int launchAngle = 0;
@@ -230,11 +231,12 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		// Initialize position of the ball.
 		initialTime = System.currentTimeMillis();
 		
-		Point2D initialPos = new Point2D(40, WINDOW_HEIGHT / 2);
+		Point2D initialPos = new Point2D(40, (WINDOW_HEIGHT / 2));
 		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
-		Image ballImg = new Image(ClsMain.resourceLoader("Sphere.png"));
+		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Sphere.png"));
 		
 		cannonBall = new Ball(initialPos, initialVel, ballImg);
+		cannonBall.setPosition(cannonBall.getPosition().subtract(0, cannonBall.getImageView().getFitHeight()));
 		cannonBall.update();
 		
 		Group dispGroup = new Group(cannonBall.getImageView());
@@ -251,7 +253,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		btnPause.setDisable(false);
 		btnReset.setDisable(false);
 		
-		lblHelp.setText("Staring the animation.");
+		lblHelp.setText(HELP_START);
 		
 		// Generate main animation loop.
 		isPaused = false;
@@ -260,26 +262,41 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			@Override
 			public void handle(long now) {
 				// TODO: Fix initialTime.
+				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
-					// Graph the current data.
-					elapsedTime.setValue(System.currentTimeMillis() - initialTime);
-					if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
-						timeUntilGraph.add(400);
+					// Check if the ball has reached the bottom of the screen.
+					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) + (cannonBall.getImageView().getFitHeight()))) {
+						lblHelp.setText(HELP_COMPLETE);
+					} else {
+						// Check if the ball has exceeded the screen's dimensions.
+						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
+								|| cannonBall.getPosition().getX() < (0 - cannonBall.getImageView().getFitWidth())) {
+							lblHelp.setText(HELP_OOB);
+						}
 						
-						FloatProperty position = new SimpleFloatProperty();
-						position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
+						// Graph the current data.
+						elapsedTime.setValue(System.currentTimeMillis() - initialTime);
 						
-						NumberBinding velocity = position.subtract(previousPos).divide(400);
+						if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
+							timeUntilGraph.add(400);
+							
+							// Get the instantaneous velocity.
+							FloatProperty position = new SimpleFloatProperty();
+							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
+							
+							NumberBinding velocity = position.subtract(previousPos).divide(400);
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue());
+							
+							seriesVel.getData().add(dataPoint);
+							previousPos = position;
+						}
 						
-						seriesVel.getData().add(new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue()));
-						previousPos = position;
+						// Apply gravitational acceleration.
+						cannonBall.applyForce(acceleration);
+						cannonBall.move();
+						cannonBall.update();
+						redrawScene();
 					}
-					
-					// Apply gravitational acceleration.
-					cannonBall.applyForce(acceleration);
-					cannonBall.move();
-					cannonBall.update();
-					redrawScene();
 				}
 			}
 		};
@@ -294,13 +311,14 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		seriesVel.getData().clear();
 		previousPos.setValue(0);
 		
-		// Enable start button and disable rest.
+		// Enable start button and disable the animation buttons.
 		btnStart.setDisable(false);
 		btnDone.setDisable(true);
 		btnPause.setDisable(true);
 		btnReset.setDisable(true);
 		
 		mainLoop.stop();
+		lblHelp.setText(HELP_DONE);
 	}
 	
 	// User presses btnPause.
@@ -311,10 +329,12 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			btnPause.setText("Resume");
 			btnDone.setDisable(true);
 			mainLoop.stop();
+			lblHelp.setText(HELP_PAUSE);
 		} else {
 			btnPause.setText("Pause");
 			btnDone.setDisable(false);
 			mainLoop.start();
+			lblHelp.setText(HELP_RESUME);
 		}
 	}
 	
@@ -322,6 +342,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	public static void doBtnReset() {
 		doBtnDone();
 		doBtnStart();
+		lblHelp.setText(HELP_RESET);
 	}
 	
 	// User presses btnReset.
@@ -331,7 +352,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		alert.setTitle(null);
 		alert.setHeaderText(null);
 		alert.setContentText("This animation will launch a cannon ball at a specified angle and velocity."
-				+ NEWLINE + "The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
+				+ NEWLINE + NEWLINE + "The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
 
 		alert.showAndWait();
 	}
