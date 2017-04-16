@@ -3,9 +3,7 @@ package pkg_M;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.FloatProperty;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -32,8 +30,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	private static Ball cannonBall;
 	private static boolean isPaused;
 	private static long initialTime;
-	private static boolean test = false;
-	private static long testInt = 0;
 	
 	// Windows
 	private static VBox winProj;
@@ -238,7 +234,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		Point2D initialPos = new Point2D(40, (WINDOW_HEIGHT / 2));
 		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
-		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Juan.png"));
+		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Sphere.png"));
 		
 		cannonBall = new Ball(initialPos, initialVel, ballImg);
 		cannonBall.setPosition(cannonBall.getPosition().subtract(0, cannonBall.getImageView().getFitHeight()));
@@ -267,15 +263,10 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		// Generate main animation loop.
 		isPaused = false;
-		test = false;
 		mainLoop = new AnimationTimer() {
 
 			@Override
 			public void handle(long now) {
-				if (!test) {
-					test = true;
-					testInt = now;
-				}
 				// TODO: Fix initialTime.
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
@@ -286,7 +277,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						btnDone.setDisable(true);
 						btnPause.setDisable(true);
 						btnReset.setDisable(true);
-						System.out.println(now - testInt);
 						mainLoop.stop();
 					} else {
 						// Check if the ball has exceeded the screen's dimensions.
