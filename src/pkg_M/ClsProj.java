@@ -140,6 +140,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
         final NumberAxis yAxis = new NumberAxis();
         chrtVel = new LineChart<Number, Number>(xAxis, yAxis);
         chrtVel.setAnimated(false);
+        chrtVel.setCreateSymbols(false);
 		
 		seriesVel = new XYChart.Series<Number, Number>();
 		seriesVel.setName("Velocity over Time");
@@ -232,6 +233,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		// Initialize position of the ball.
 		initialTime = System.currentTimeMillis();
+		seriesVel.getData().clear();
 		
 		Point2D initialPos = new Point2D(40, (WINDOW_HEIGHT / 2));
 		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
@@ -274,6 +276,10 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 					// Check if the ball has reached the bottom of the screen.
 					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) - (cannonBall.getImageView().getFitHeight()))) {
 						lblHelp.setText(HELP_COMPLETE);
+						btnStart.setDisable(false);
+						btnDone.setDisable(true);
+						btnPause.setDisable(true);
+						btnReset.setDisable(true);
 					} else {
 						// Check if the ball has exceeded the screen's dimensions.
 						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
@@ -283,6 +289,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						
 						// Graph the current data.
 						elapsedTime.setValue(System.currentTimeMillis() - initialTime);
+						
+						// Apply gravitational acceleration.
+						cannonBall.applyForce(acceleration);
+						cannonBall.getImageView().setRotate(cannonBall.getImageView().getRotate() + cannonBall.getVelocity().getX() * 10);
+						cannonBall.move();
+						cannonBall.update();
+						redrawScene();
 						
 						if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
 							timeUntilGraph.add(400);
@@ -297,13 +310,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 							seriesVel.getData().add(dataPoint);
 							previousPos = position;
 						}
-						
-						// Apply gravitational acceleration.
-						cannonBall.applyForce(acceleration);
-						cannonBall.getImageView().setRotate(cannonBall.getImageView().getRotate() + cannonBall.getVelocity().getX() * 10);
-						cannonBall.move();
-						cannonBall.update();
-						redrawScene();
 					}
 				}
 			}

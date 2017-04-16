@@ -33,3 +33,10 @@
     -fx-border-width: 1px 0px 0px 0px;
     -fx-background-color: rgb(0, 117, 192);
 }
+
+/* Line Charts */
+.chart-series-line {    
+    -fx-stroke-width: 1px;
+    -fx-stroke: #000;
+    -fx-effect: null;
+}
