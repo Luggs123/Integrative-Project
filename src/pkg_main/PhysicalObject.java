@@ -36,11 +36,6 @@ public abstract class PhysicalObject extends Circle {
 		this.imageView = new ImageView(image);
 		this.imageView.setFitWidth(50);
 		this.imageView.setFitHeight(50);
-		
-		this.leftBound = this.getPosition().getX() - this.getImageView().getFitWidth() / 2;
-		this.rightBound = this.getPosition().getX() + this.getImageView().getFitWidth() / 2;
-		this.lowerBound = this.getPosition().getY() + this.getImageView().getFitHeight() / 2;
-		this.upperBound = this.getPosition().getY() - this.getImageView().getFitHeight() / 2;
 	}
 	
 	public PhysicalObject(Point2D position, Image image) {
