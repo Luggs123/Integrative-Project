@@ -145,10 +145,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		seriesVel.setName("Velocity over Time");
 		chrtVel.getData().add(seriesVel);
 		
-		elapsedTime = new SimpleLongProperty();
-		timeUntilGraph = new SimpleLongProperty();
-		previousPos = new SimpleFloatProperty(WINDOW_HEIGHT / 2);
-		
 		winInfo.setPrefWidth(3 * WINDOW_WIDTH / 8);
 		winInfo.getChildren().addAll(chrtVel);
 		
@@ -239,11 +235,16 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		Point2D initialPos = new Point2D(40, (WINDOW_HEIGHT / 2));
 		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
-		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Sphere.png"));
+		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Juan.png"));
 		
 		cannonBall = new Ball(initialPos, initialVel, ballImg);
 		cannonBall.setPosition(cannonBall.getPosition().subtract(0, cannonBall.getImageView().getFitHeight()));
 		cannonBall.update();
+		
+		// Initialize graph data.
+		elapsedTime = new SimpleLongProperty();
+		timeUntilGraph = new SimpleLongProperty();
+		previousPos = new SimpleFloatProperty((float) (WINDOW_HEIGHT / 2 - cannonBall.getPosition().getY()));
 		
 		Group dispGroup = new Group(cannonBall.getImageView());
 		winDisplay.getChildren().clear();
@@ -287,11 +288,11 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 							timeUntilGraph.add(400);
 							
 							// Get the instantaneous velocity.
-							FloatProperty position = new SimpleFloatProperty();
+							FloatProperty position = new SimpleFloatProperty(0f);
 							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
 							
 							NumberBinding velocity = position.subtract(previousPos).divide(400);
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue());
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue().floatValue());
 							
 							seriesVel.getData().add(dataPoint);
 							previousPos = position;
