@@ -109,25 +109,30 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		btnReset.setDisable(true);
 		
 		// Add buttons and labels to winButt.
-		VBox vLabels = new VBox(30);
+		VBox vLabels = new VBox(35);
 		VBox vFields = new VBox(30);
 		VBox vButtons = new VBox(20);
 		
+		vLabels.setAlignment(Pos.CENTER_RIGHT);
+		vLabels.setPadding(new Insets(15));
 		vLabels.getChildren().addAll(lblAng, lblGrav, lblVel);
+		
+		vFields.setAlignment(Pos.CENTER);
 		vFields.getChildren().addAll(txtAng, txtGrav, txtVel);
 		
-		HBox buttonLayout1 = new HBox();
-		HBox buttonLayout2 = new HBox();
+		HBox buttonLayout1 = new HBox(15);
+		HBox buttonLayout2 = new HBox(15);
 		buttonLayout1.setAlignment(Pos.BOTTOM_CENTER);
 		buttonLayout2.setAlignment(Pos.BOTTOM_CENTER);
 		
 		buttonLayout1.getChildren().addAll(btnStart, btnDone, btnPause);
 		buttonLayout2.getChildren().addAll(btnReset, btnHelp);
 		
-		vButtons.setPadding(new Insets(35));
+		vButtons.setPadding(new Insets(10));
+		vButtons.setAlignment(Pos.CENTER);
 		vButtons.getChildren().addAll(buttonLayout1, buttonLayout2);
 		
-		winButt.setPrefWidth(WINDOW_WIDTH / 2);
+		winButt.setPrefWidth(5 * WINDOW_WIDTH / 8);
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
 		// Setup info window.
@@ -142,13 +147,14 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		elapsedTime = new SimpleLongProperty();
 		timeUntilGraph = new SimpleLongProperty();
-		previousPos = new SimpleFloatProperty();
+		previousPos = new SimpleFloatProperty(WINDOW_HEIGHT / 2);
 		
-		winInfo.setPrefWidth(WINDOW_WIDTH / 2);
+		winInfo.setPrefWidth(3 * WINDOW_WIDTH / 8);
 		winInfo.getChildren().addAll(chrtVel);
 		
 		// Help window.
 		lblHelp = new Label();
+		lblHelp.setTextFill(Color.WHITE);
 		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
 		winHelp.getChildren().add(lblHelp);
 		
@@ -265,12 +271,12 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Check if the ball has reached the bottom of the screen.
-					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) + (cannonBall.getImageView().getFitHeight()))) {
+					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) - (cannonBall.getImageView().getFitHeight()))) {
 						lblHelp.setText(HELP_COMPLETE);
 					} else {
 						// Check if the ball has exceeded the screen's dimensions.
 						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
-								|| cannonBall.getPosition().getX() < (0 - cannonBall.getImageView().getFitWidth())) {
+								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
 							lblHelp.setText(HELP_OOB);
 						}
 						
@@ -293,6 +299,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						
 						// Apply gravitational acceleration.
 						cannonBall.applyForce(acceleration);
+						cannonBall.getImageView().setRotate(cannonBall.getImageView().getRotate() + cannonBall.getVelocity().getX() * 10);
 						cannonBall.move();
 						cannonBall.update();
 						redrawScene();
@@ -309,7 +316,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		// Clear all animation data.
 		winDisplay.getChildren().clear();
 		seriesVel.getData().clear();
-		previousPos.setValue(0);
+		previousPos.setValue(WINDOW_HEIGHT / 2);
 		
 		// Enable start button and disable the animation buttons.
 		btnStart.setDisable(false);
