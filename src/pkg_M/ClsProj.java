@@ -292,7 +292,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						// Check if the ball has exceeded the screen's dimensions.
 						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
 								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
-							lblHelp.setText(HELP_OOB);
+							lblHelp.setText(HELP_OOB);	
 						}
 						
 						// Apply gravitational acceleration.
@@ -306,13 +306,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						elapsedTime = System.currentTimeMillis() - initialTime;
 						
 						if (timeUntilGraph < elapsedTime) {
-							timeUntilGraph += 20;
+							timeUntilGraph += GRAPHING_DELAY;
 							
 							// Get the instantaneous velocity.
 							FloatProperty position = new SimpleFloatProperty();
 							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
 							
-							NumberBinding velocity = position.subtract(previousPos).divide(20);
+							NumberBinding velocity = position.subtract(previousPos).divide(GRAPHING_DELAY);
 							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocity.getValue().floatValue());
 							
 							seriesVel.getData().add(dataPoint);
