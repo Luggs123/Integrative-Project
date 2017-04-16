@@ -36,7 +36,7 @@
 
 /* Line Charts */
 .chart-series-line {    
-    -fx-stroke-width: 1px;
+    -fx-stroke-width: 2px;
     -fx-stroke: #000;
     -fx-effect: null;
 }

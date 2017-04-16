@@ -32,6 +32,8 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	private static Ball cannonBall;
 	private static boolean isPaused;
 	private static long initialTime;
+	private static boolean test = false;
+	private static long testInt = 0;
 	
 	// Windows
 	private static VBox winProj;
@@ -58,8 +60,8 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	// Charts
 	private static LineChart<Number, Number> chrtVel;
 	private static XYChart.Series<Number, Number> seriesVel;
-	private static LongProperty elapsedTime;
-	private static LongProperty timeUntilGraph;
+	private static long elapsedTime;
+	private static long timeUntilGraph;
 	private static FloatProperty previousPos;
 	
 	public static Pane drawScene() {
@@ -179,7 +181,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		ClsMain.updatePane(winProj);
 	}
 	
-	// TODO: Make ball spin.
 	// User presses btnStart.
 	public static void doBtnStart() {
 		int launchAngle = 0;
@@ -244,8 +245,8 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		cannonBall.update();
 		
 		// Initialize graph data.
-		elapsedTime = new SimpleLongProperty();
-		timeUntilGraph = new SimpleLongProperty();
+		elapsedTime = 0;
+		timeUntilGraph = 0;
 		previousPos = new SimpleFloatProperty((float) (WINDOW_HEIGHT / 2 - cannonBall.getPosition().getY()));
 		
 		Group dispGroup = new Group(cannonBall.getImageView());
@@ -266,10 +267,15 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		// Generate main animation loop.
 		isPaused = false;
+		test = false;
 		mainLoop = new AnimationTimer() {
 
 			@Override
 			public void handle(long now) {
+				if (!test) {
+					test = true;
+					testInt = now;
+				}
 				// TODO: Fix initialTime.
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
@@ -280,15 +286,14 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						btnDone.setDisable(true);
 						btnPause.setDisable(true);
 						btnReset.setDisable(true);
+						System.out.println(now - testInt);
+						mainLoop.stop();
 					} else {
 						// Check if the ball has exceeded the screen's dimensions.
 						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
 								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
 							lblHelp.setText(HELP_OOB);
 						}
-						
-						// Graph the current data.
-						elapsedTime.setValue(System.currentTimeMillis() - initialTime);
 						
 						// Apply gravitational acceleration.
 						cannonBall.applyForce(acceleration);
@@ -297,15 +302,18 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						cannonBall.update();
 						redrawScene();
 						
-						if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
-							timeUntilGraph.add(400);
+						// Graph the current data.
+						elapsedTime = System.currentTimeMillis() - initialTime;
+						
+						if (timeUntilGraph < elapsedTime) {
+							timeUntilGraph += 100;
 							
 							// Get the instantaneous velocity.
-							FloatProperty position = new SimpleFloatProperty(0f);
+							FloatProperty position = new SimpleFloatProperty();
 							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
 							
-							NumberBinding velocity = position.subtract(previousPos).divide(400);
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue().floatValue());
+							NumberBinding velocity = position.subtract(previousPos).divide(100);
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocity.getValue().floatValue());
 							
 							seriesVel.getData().add(dataPoint);
 							previousPos = position;
