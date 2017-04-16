@@ -3,9 +3,9 @@ package pkg_M;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
-public class Ball extends pkg_main.PhysicalObject {
+public class Cart extends pkg_main.PhysicalObject {
 
-	public Ball(Point2D position, Point2D velocity, Image image) {
+	public Cart(Point2D position, Point2D velocity, Image image) {
 		super(position, velocity, image);
 	}
 

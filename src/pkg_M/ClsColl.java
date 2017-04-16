@@ -13,6 +13,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -23,13 +24,13 @@ import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
-import pkg_main.HelpLabel;
 
-public class ClsProj implements IProjectile, pkg_main.IConstants {
+public class ClsColl implements ICollisions, pkg_main.IConstants {
 	
 	// Animation Properties
 	public static AnimationTimer mainLoop;
-	private static Ball cannonBall;
+	private static Cart cart1;
+	private static Cart cart2;
 	private static boolean isPaused;
 	private static long initialTime;
 	private static long pauseTime;
@@ -49,12 +50,15 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	public static AppButton btnHelp;
 	
 	// Text Fields
-	private static AppTextField txtAng;
-	private static AppTextField txtGrav;
+	private static AppTextField txtM1;
+	private static AppTextField txtM2;
 	private static AppTextField txtVel;
 	
+	private static RadioButton rdbtnEla;
+	private static RadioButton rdbtnInEla;
+	
 	// Labels
-	private static HelpLabel lblHelp;
+	private static Label lblHelp;
 	
 	// Charts
 	private static LineChart<Number, Number> chrtVel;
@@ -85,22 +89,19 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winDisplay.setPrefHeight(WINDOW_HEIGHT / 2);
 		
 		// Setup button window.
-		Label lblAng = new Label("Angle of Launch (Degrees):");
-		Label lblGrav = new Label("Gravitational Constant: ");
+		Label lblM1 = new Label("Mass of Cart 1: ");
+		Label lblM2 = new Label("Mass of Cart 2: ");
 		Label lblVel = new Label("Initial Velocity: ");
-		lblAng.setTextAlignment(TextAlignment.RIGHT);
-		lblGrav.setTextAlignment(TextAlignment.RIGHT);
+		lblM1.setTextAlignment(TextAlignment.RIGHT);
+		lblM2.setTextAlignment(TextAlignment.RIGHT);
 		lblVel.setTextAlignment(TextAlignment.RIGHT);
-		lblAng.setTextFill(Color.WHITE);
-		lblGrav.setTextFill(Color.WHITE);
+		lblM1.setTextFill(Color.WHITE);
+		lblM2.setTextFill(Color.WHITE);
 		lblVel.setTextFill(Color.WHITE);
 
-		txtAng = new AppTextField("Angle of Launch");
-		txtGrav = new AppTextField("Gravitational Constant");
+		txtM1 = new AppTextField("Cart 1 Mass");
+		txtM2 = new AppTextField("Cart 2 Mass");
 		txtVel = new AppTextField("Initial Velocity");
-		txtAng.setText("45");
-		txtGrav.setText("0.03");
-		txtVel.setText("5");
 		
 		btnStart = new AppButton("Start");
 		btnDone = new AppButton("Done");
@@ -119,10 +120,10 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		vLabels.setAlignment(Pos.CENTER_RIGHT);
 		vLabels.setPadding(new Insets(15));
-		vLabels.getChildren().addAll(lblAng, lblGrav, lblVel);
+		vLabels.getChildren().addAll(lblM1, lblM2, lblVel);
 		
 		vFields.setAlignment(Pos.CENTER);
-		vFields.getChildren().addAll(txtAng, txtGrav, txtVel);
+		vFields.getChildren().addAll(txtM1, txtM2, txtVel);
 		
 		HBox buttonLayout1 = new HBox(15);
 		HBox buttonLayout2 = new HBox(15);
@@ -154,7 +155,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winInfo.getChildren().addAll(chrtVel);
 		
 		// Help window.
-		lblHelp = new HelpLabel(TITLE);
+		lblHelp = new Label();
 		lblHelp.setTextFill(Color.WHITE);
 		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
 		winHelp.getChildren().add(lblHelp);
@@ -185,40 +186,40 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	
 	// User presses btnStart.
 	public static void doBtnStart() {
-		int launchAngle = 0;
-		float gravityConst = 0f;
+		float massCart1 = 0f;
+		float massCart2 = 0f;
 		float initVel = 0f;
 		
 		// TODO: Figure out max values.
 		// Get the user inputed values and return if any of the inputs are invalid.
 		if (
-				!(txtAng.tryGetInt()
-				&& txtGrav.tryGetFloat()
+				!(txtM1.tryGetFloat()
+				&& txtM2.tryGetFloat()
 				&& txtVel.tryGetFloat())
 				)
 		{
 			return;
 		}
 		
-		launchAngle = Integer.parseInt(txtAng.getText());
-		gravityConst = Float.parseFloat(txtGrav.getText());
+		massCart1 = Float.parseFloat(txtM1.getText());
+		massCart2 = Float.parseFloat(txtM2.getText());
 		initVel = Float.parseFloat(txtVel.getText());
 		
-		if (launchAngle < 0 || launchAngle > 90) {
+		if (massCart1 <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Input Value Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("The value inputed for the Angle of Launch must be between 0 and 90 degrees.");
+			alert.setContentText("The value inputed for the Mass of Cart 1 must be a positive number.");
 
 			alert.showAndWait();
 			return;
 		}
 		
-		if (gravityConst <= 0) {
+		if (massCart2 <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Input Value Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("The value inputed for the Gravitational Constant must be a number greater than 0.");
+			alert.setContentText("The value inputed for the Mass of Cart 2 must be a positive number.");
 
 			alert.showAndWait();
 			return;
@@ -288,7 +289,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						// Check if the ball has exceeded the screen's dimensions.
 						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
 								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
-							lblHelp.setHelpText(HELP_OOB);	
+							lblHelp.setText(HELP_OOB);	
 						}
 						
 						// Apply gravitational acceleration.
@@ -336,7 +337,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		btnReset.setDisable(true);
 		
 		mainLoop.stop();
-		lblHelp.setHelpText(HELP_DONE);
+		lblHelp.setText(HELP_DONE);
 	}
 	
 	// User presses btnPause.
@@ -347,13 +348,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			btnPause.setText("Resume");
 			btnDone.setDisable(true);
 			mainLoop.stop();
-			lblHelp.setHelpText(HELP_PAUSE);
+			lblHelp.setText(HELP_PAUSE);
 			pauseTime = System.currentTimeMillis();
 		} else {
 			btnPause.setText("Pause");
 			btnDone.setDisable(false);
 			mainLoop.start();
-			lblHelp.setHelpText(HELP_RESUME);
+			lblHelp.setText(HELP_RESUME);
 			initialTime += System.currentTimeMillis() - pauseTime;
 		}
 	}
@@ -362,7 +363,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	public static void doBtnReset() {
 		doBtnDone();
 		doBtnStart();
-		lblHelp.setHelpText(HELP_RESET);
+		lblHelp.setText(HELP_RESET);
 	}
 	
 	// User presses btnReset.
