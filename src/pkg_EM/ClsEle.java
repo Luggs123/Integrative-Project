@@ -2,19 +2,11 @@ package pkg_EM;
 
 import java.util.List;
 import javafx.animation.AnimationTimer;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
@@ -23,7 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
@@ -38,6 +29,7 @@ public class ClsEle implements pkg_main.IConstants {
 	private static int selected = 0;
 	private static double mouseX;
 	private static double mouseY;
+	static float eleConst = 0f;
 	
 	// Windows
 	private static VBox winEle;
@@ -67,6 +59,7 @@ public class ClsEle implements pkg_main.IConstants {
 	// Data
 	private static Label selectedVelocity;
 	private static Label selectedAcceleration;
+	private static Label selectedCharge;
 	private static Label selectedMass;
 	
 	// Charge image.
@@ -119,7 +112,7 @@ public class ClsEle implements pkg_main.IConstants {
 		btnReset.setDisable(true);
 		btnSelect.setDisable(true);
 		btnRemove.setDisable(true);
-		
+				
 		// Add buttons and labels to winButt.
 		VBox vLabels = new VBox(30);
 		VBox vFields = new VBox(30);
@@ -151,11 +144,12 @@ public class ClsEle implements pkg_main.IConstants {
 					", " + particles.get(selected).getVelocity().getY());
 			selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
 					", " + particles.get(selected).getAcceleration().getY());
+			selectedCharge.setText("Charge: " + particles.get(selected).getCharge());
 			selectedMass.setText("Mass: " + particles.get(selected).getMass());
 		}
 		
 		winInfo.setPrefWidth(WINDOW_WIDTH / 2);
-		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration, selectedMass);
+		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration, selectedCharge, selectedMass);
 		
 		// Help window.
 		lblHelp = new Label();
@@ -188,8 +182,6 @@ public class ClsEle implements pkg_main.IConstants {
 	
 	// User presses btnStart.
 	public static void doBtnStart() {
-		float eleConst = 0f;
-		
 		// Get the user inputed values and return if any of the inputs are invalid.
 		if (!txtEleConst.tryGetFloat())
 		{
@@ -241,37 +233,14 @@ public class ClsEle implements pkg_main.IConstants {
 			public void handle(long now) {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
-					// Check if the ball has reached the bottom of the screen.
-					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) + (cannonBall.getImageView().getFitHeight()))) {
-						lblHelp.setText(HELP_COMPLETE);
-					} else {
-						// Check if the ball has exceeded the screen's dimensions.
-						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
-								|| cannonBall.getPosition().getX() < (0 - cannonBall.getImageView().getFitWidth())) {
-							lblHelp.setText(HELP_OOB);
+					// Apply all forces.
+					for (Particle p : particles) {p.setAcceleration(Point2D.ZERO);
+						for (Particle r : particles) {
+							p.applyForce(p.attract(r).multiply(eleConst));
 						}
-						
-						// Graph the current data.
-						elapsedTime.setValue(System.currentTimeMillis() - initialTime);
-						
-						if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
-							timeUntilGraph.add(400);
-							
-							// Get the instantaneous velocity.
-							FloatProperty position = new SimpleFloatProperty();
-							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
-							
-							NumberBinding velocity = position.subtract(previousPos).divide(400);
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue());
-							
-							seriesVel.getData().add(dataPoint);
-							previousPos = position;
-						}
-						
-						// Apply gravitational acceleration.
-						cannonBall.applyForce(acceleration);
-						cannonBall.move();
-						cannonBall.update();
+						p.applyForce(p.getAcceleration());
+						p.move();
+						p.update();
 						redrawScene();
 					}
 				}

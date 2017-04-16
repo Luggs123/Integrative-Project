@@ -7,8 +7,8 @@ public class Settings {
 
 	// ensure that attraction is applied with at least min and max
 	// we don't want it to be too weak or too strong
-	public static double ATTRACTION_DISTANCE_MIN = 5;
-	public static double ATTRACTION_DISTANCE_MAX = 25.0;
+	public static double ATTRACTION_DISTANCE_MIN = 25.0;
+	public static double ATTRACTION_DISTANCE_MAX = 300.0;
 
 	// Universal Gravitational Constant; real world: 6.67428E10-11;
 	public static double GRAVITATIONAL_CONSTANT = 2;

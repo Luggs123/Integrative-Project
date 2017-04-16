@@ -38,7 +38,7 @@ public class Particle extends PhysicalObject {
 		force = force.normalize();
 
 		// Magnitude of the force.
-		double strength = (Settings.GRAVITATIONAL_CONSTANT * this.getMass() * m.getMass()) / (distance * distance);
+		double strength = (this.getCharge() * m.getCharge()) / (distance * distance);
 		force = force.multiply(strength);
 
 		return force;
