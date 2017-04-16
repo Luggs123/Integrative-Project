@@ -18,4 +18,5 @@ public interface IConstants {
 	final int WINDOW_WIDTH = 1200;
 	final int WINDOW_HEIGHT = 720;
 	final int BTN_WIDTH = 64;
+	final int GRAPHING_DELAY = 10;
 }
