@@ -23,10 +23,11 @@ import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
+import pkg_main.HelpLabel;
 
 public class ClsProj implements IProjectile, pkg_main.IConstants {
 	
-	// Animation
+	// Animation Properties
 	public static AnimationTimer mainLoop;
 	private static Ball cannonBall;
 	private static boolean isPaused;
@@ -53,7 +54,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	private static AppTextField txtVel;
 	
 	// Labels
-	private static Label lblHelp;
+	private static HelpLabel lblHelp;
 	
 	// Charts
 	private static LineChart<Number, Number> chrtVel;
@@ -153,7 +154,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winInfo.getChildren().addAll(chrtVel);
 		
 		// Help window.
-		lblHelp = new Label();
+		lblHelp = new HelpLabel(TITLE);
 		lblHelp.setTextFill(Color.WHITE);
 		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
 		winHelp.getChildren().add(lblHelp);
@@ -264,7 +265,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		btnPause.setDisable(false);
 		btnReset.setDisable(false);
 		
-		lblHelp.setText(HELP_START);
+		lblHelp.setHelpText(HELP_START);
 		
 		// Generate main animation loop.
 		isPaused = false;
@@ -277,7 +278,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 				if (!isPaused) {
 					// Check if the ball has reached the bottom of the screen.
 					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) - (cannonBall.getImageView().getFitHeight()))) {
-						lblHelp.setText(HELP_COMPLETE);
+						lblHelp.setHelpText(HELP_COMPLETE);
 						btnStart.setDisable(false);
 						btnDone.setDisable(true);
 						btnPause.setDisable(true);
@@ -287,7 +288,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						// Check if the ball has exceeded the screen's dimensions.
 						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
 								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
-							lblHelp.setText(HELP_OOB);	
+							lblHelp.setHelpText(HELP_OOB);	
 						}
 						
 						// Apply gravitational acceleration.
@@ -335,7 +336,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		btnReset.setDisable(true);
 		
 		mainLoop.stop();
-		lblHelp.setText(HELP_DONE);
+		lblHelp.setHelpText(HELP_DONE);
 	}
 	
 	// User presses btnPause.
@@ -346,13 +347,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			btnPause.setText("Resume");
 			btnDone.setDisable(true);
 			mainLoop.stop();
-			lblHelp.setText(HELP_PAUSE);
+			lblHelp.setHelpText(HELP_PAUSE);
 			pauseTime = System.currentTimeMillis();
 		} else {
 			btnPause.setText("Pause");
 			btnDone.setDisable(false);
 			mainLoop.start();
-			lblHelp.setText(HELP_RESUME);
+			lblHelp.setHelpText(HELP_RESUME);
 			initialTime += System.currentTimeMillis() - pauseTime;
 		}
 	}
@@ -361,7 +362,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	public static void doBtnReset() {
 		doBtnDone();
 		doBtnStart();
-		lblHelp.setText(HELP_RESET);
+		lblHelp.setHelpText(HELP_RESET);
 	}
 	
 	// User presses btnReset.

@@ -186,40 +186,40 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	
 	// User presses btnStart.
 	public static void doBtnStart() {
-		int launchAngle = 0;
-		float gravityConst = 0f;
+		float massCart1 = 0f;
+		float massCart2 = 0f;
 		float initVel = 0f;
 		
 		// TODO: Figure out max values.
 		// Get the user inputed values and return if any of the inputs are invalid.
 		if (
-				!(txtAng.tryGetInt()
-				&& txtGrav.tryGetFloat()
+				!(txtM1.tryGetFloat()
+				&& txtM2.tryGetFloat()
 				&& txtVel.tryGetFloat())
 				)
 		{
 			return;
 		}
 		
-		launchAngle = Integer.parseInt(txtAng.getText());
-		gravityConst = Float.parseFloat(txtGrav.getText());
+		massCart1 = Float.parseFloat(txtM1.getText());
+		massCart2 = Float.parseFloat(txtM2.getText());
 		initVel = Float.parseFloat(txtVel.getText());
 		
-		if (launchAngle < 0 || launchAngle > 90) {
+		if (massCart1 <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Input Value Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("The value inputed for the Angle of Launch must be between 0 and 90 degrees.");
+			alert.setContentText("The value inputed for the Mass of Cart 1 must be a positive number.");
 
 			alert.showAndWait();
 			return;
 		}
 		
-		if (gravityConst <= 0) {
+		if (massCart2 <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Input Value Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("The value inputed for the Gravitational Constant must be a number greater than 0.");
+			alert.setContentText("The value inputed for the Mass of Cart 2 must be a positive number.");
 
 			alert.showAndWait();
 			return;
@@ -266,7 +266,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		btnPause.setDisable(false);
 		btnReset.setDisable(false);
 		
-		lblHelp.setText(HELP_START);
+		lblHelp.setHelpText(HELP_START);
 		
 		// Generate main animation loop.
 		isPaused = false;
@@ -279,7 +279,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 				if (!isPaused) {
 					// Check if the ball has reached the bottom of the screen.
 					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) - (cannonBall.getImageView().getFitHeight()))) {
-						lblHelp.setText(HELP_COMPLETE);
+						lblHelp.setHelpText(HELP_COMPLETE);
 						btnStart.setDisable(false);
 						btnDone.setDisable(true);
 						btnPause.setDisable(true);
