@@ -1,7 +1,6 @@
 package pkg_EM;
 
 import java.util.List;
-
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.FloatProperty;
@@ -58,8 +57,9 @@ public class ClsEle implements pkg_main.IConstants {
 	public static AppButton btnRemove;
 	
 	// Text Fields
-	private static AppTextField txtCharge;
 	private static AppTextField txtEleConst;
+	private static AppTextField txtCharge;
+	private static AppTextField txtMass;
 	
 	// Labels
 	private static Label lblHelp;
@@ -67,6 +67,7 @@ public class ClsEle implements pkg_main.IConstants {
 	// Data
 	private static Label selectedVelocity;
 	private static Label selectedAcceleration;
+	private static Label selectedMass;
 	
 	// Charge image.
 	static Image chargeImg = new Image(ClsMain.resourceLoader("EleForce/Charge.png"));
@@ -93,13 +94,16 @@ public class ClsEle implements pkg_main.IConstants {
 		winDisplay.setPrefHeight(WINDOW_HEIGHT / 2);
 		
 		// Setup button window.
-		Label lblCharge = new Label("Particle Charge: ");
 		Label lblEleConst = new Label("Coulomb's Constant: ");
-		lblCharge.setTextAlignment(TextAlignment.RIGHT);
+		Label lblCharge = new Label("Particle Charge: ");
+		Label lblMass = new Label("Mass: ");
 		lblEleConst.setTextAlignment(TextAlignment.RIGHT);
-
-		txtCharge = new AppTextField("Particle Charge");
+		lblCharge.setTextAlignment(TextAlignment.RIGHT);
+		lblMass.setTextAlignment(TextAlignment.RIGHT);
+		
 		txtEleConst = new AppTextField("Coulomb's Constant");
+		txtCharge = new AppTextField("Particle Charge");
+		txtMass = new AppTextField("Mass");
 		
 		btnStart = new AppButton("Start");
 		btnDone = new AppButton("Done");
@@ -121,8 +125,8 @@ public class ClsEle implements pkg_main.IConstants {
 		VBox vFields = new VBox(30);
 		VBox vButtons = new VBox(20);
 		
-		vLabels.getChildren().addAll(lblCharge, lblEleConst);
-		vFields.getChildren().addAll(txtCharge, txtEleConst);
+		vLabels.getChildren().addAll(lblEleConst, lblCharge, lblMass);
+		vFields.getChildren().addAll(txtEleConst, txtCharge, txtMass);
 		
 		HBox buttonLayout1 = new HBox();
 		HBox buttonLayout2 = new HBox();
@@ -142,13 +146,16 @@ public class ClsEle implements pkg_main.IConstants {
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
 		// Setup info window.
-		selectedVelocity.setText("Velocity: " + particles.get(selected).getVelocity().getX() + 
-				", " + particles.get(selected).getVelocity().getY());
-		selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
-				", " + particles.get(selected).getAcceleration().getY());
+		if (hasSelected) {
+			selectedVelocity.setText("Velocity: " + particles.get(selected).getVelocity().getX() + 
+					", " + particles.get(selected).getVelocity().getY());
+			selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
+					", " + particles.get(selected).getAcceleration().getY());
+			selectedMass.setText("Mass: " + particles.get(selected).getMass());
+		}
 		
 		winInfo.setPrefWidth(WINDOW_WIDTH / 2);
-		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration);
+		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration, selectedMass);
 		
 		// Help window.
 		lblHelp = new Label();
@@ -179,15 +186,12 @@ public class ClsEle implements pkg_main.IConstants {
 		ClsMain.updatePane(winEle);
 	}
 	
-	// TODO: Make ball spin.
 	// User presses btnStart.
 	public static void doBtnStart() {
-		int charge = 0;
 		float eleConst = 0f;
 		
-		// TODO: Figure out max values.
 		// Get the user inputed values and return if any of the inputs are invalid.
-		if (!(txtCharge.tryGetInt() && txtEleConst.tryGetFloat()))
+		if (!txtEleConst.tryGetFloat())
 		{
 			return;
 		}
@@ -208,10 +212,18 @@ public class ClsEle implements pkg_main.IConstants {
 		for (Particle p : particles) {
 			dispGroup.getChildren().add(p);
 		}
+		winDisplay.getChildren().add(dispGroup);
 		redrawScene();
-		
-		// Get acceleration vector.
-		Point2D acceleration = new Point2D(0, gravityConst);
+
+		for (Particle p : particles) {
+			p.setAcceleration(Point2D.ZERO);
+			for (Particle r : particles) {
+				double distMag = p.getPosition().distance(r.getPosition());
+				Point2D distDir = new Point2D((p.getPosition().getX() - r.getPosition().getX()), 
+						(p.getPosition().getY() - r.getPosition().getY())).normalize();
+				p.setAcceleration(p.getAcceleration().add(distDir.multiply(eleConst * p.getCharge() * r.getCharge() / (distMag * distMag))));
+			}
+		}
 		
 		// Disable start button and enable the rest.
 		btnStart.setDisable(true);
@@ -227,7 +239,6 @@ public class ClsEle implements pkg_main.IConstants {
 
 			@Override
 			public void handle(long now) {
-				// TODO: Fix initialTime.
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Check if the ball has reached the bottom of the screen.
@@ -315,8 +326,8 @@ public class ClsEle implements pkg_main.IConstants {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(null);
 		alert.setHeaderText(null);
-		alert.setContentText("This animation will launch a cannon ball at a specified angle and velocity."
-				+ NEWLINE + NEWLINE + "The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
+		alert.setContentText("This animation will launch a cannon ball at a specified angle and velocity." + NEWLINE + NEWLINE + 
+				"The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
 
 		alert.showAndWait();
 	}
@@ -335,7 +346,8 @@ public class ClsEle implements pkg_main.IConstants {
 		});
 		
 		if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
-			particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 0, Integer.parseInt(txtCharge.getText())));
+			particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
+					Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
 		}
 		updateAll();
 	}
