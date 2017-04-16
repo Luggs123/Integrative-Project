@@ -26,12 +26,6 @@ public abstract class PhysicalObject extends Circle {
 	 **/
 	protected Image image;
 	protected ImageView imageView;
-	
-	// These are the outer bounds of the object's sprite.
-	protected double leftBound;
-	protected double rightBound;
-	protected double lowerBound;
-	protected double upperBound;
 
 	public PhysicalObject(Point2D position, Point2D velocity, Image image) {
 		this.position = position;
@@ -59,10 +53,6 @@ public abstract class PhysicalObject extends Circle {
 
 	public void setPosition(Point2D position) {
 		this.position = position;
-		this.leftBound = this.getPosition().getX() - this.getImageView().getFitWidth() / 2;
-		this.rightBound = this.getPosition().getX() + this.getImageView().getFitWidth() / 2;
-		this.lowerBound = this.getPosition().getY() + this.getImageView().getFitHeight() / 2;
-		this.upperBound = this.getPosition().getY() - this.getImageView().getFitHeight() / 2;
 	}
 
 	public Point2D getVelocity() {
@@ -90,35 +80,19 @@ public abstract class PhysicalObject extends Circle {
 	}
 
 	public double getLeftBound() {
-		return leftBound;
-	}
-
-	public void setLeftBound(double leftBound) {
-		this.leftBound = leftBound;
+		return this.getPosition().getX() - this.getImageView().getFitWidth() / 2;
 	}
 
 	public double getRightBound() {
-		return rightBound;
-	}
-
-	public void setRightBound(double rightBound) {
-		this.rightBound = rightBound;
+		return this.getPosition().getX() + this.getImageView().getFitWidth() / 2;
 	}
 
 	public double getLowerBound() {
-		return lowerBound;
-	}
-
-	public void setLowerBound(double lowerBound) {
-		this.lowerBound = lowerBound;
+		return this.getPosition().getY() + this.getImageView().getFitHeight() / 2;
 	}
 
 	public double getUpperBound() {
-		return upperBound;
-	}
-
-	public void setUpperBound(double upperBound) {
-		this.upperBound = upperBound;
+		return this.getPosition().getY() - this.getImageView().getFitHeight() / 2;
 	}
 
 	/**
