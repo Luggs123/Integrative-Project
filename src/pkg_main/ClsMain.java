@@ -30,9 +30,12 @@ public class ClsMain extends Application implements IConstants {
 	public static Menu menuMech = new Menu("Mechanics");
 	public static AppMenuItem menuProj = new AppMenuItem("Projectile Motion");
 	
-	
 	public static Menu menuWav = new Menu("Waves, Optics & Modern Physics");
+	public static AppMenuItem menuConstruction = new AppMenuItem("In Construction");
+	
 	public static Menu menuEM = new Menu("Electricity & Magnetism");
+	public static AppMenuItem menuEle = new AppMenuItem("Electrostatic Force");
+	
 	public static Menu menuProg = new Menu("Program");
 	
 	public static AppMenuItem menuExit = new AppMenuItem("Exit Program");
@@ -57,6 +60,7 @@ public class ClsMain extends Application implements IConstants {
 		// Add the menu components to the main window.
 		menuMech.getItems().addAll(menuProj);
 		menuProg.getItems().add(menuExit);
+		menuEM.getItems().add(menuEle);
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 		
 		winMain.getChildren().addAll(mainMenu, lblGreeting);

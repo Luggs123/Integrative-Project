@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import pkg_EM.ClsEle;
 import pkg_M.ClsProj;
 
 // Button Handlers
@@ -42,7 +43,10 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 		if (source == ClsMain.menuProj) {
 			ClsMain.updatePane(ClsProj.drawScene());
 
-		} else if (source == ClsMain.menuExit) {
+		} else if (source == ClsMain.menuEle) {
+			ClsMain.updatePane(ClsEle.drawScene());
+			
+		}	else if (source == ClsMain.menuExit) {
 			Platform.exit();
 			
 		}
