@@ -8,6 +8,7 @@ import javafx.beans.property.FloatProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -19,6 +20,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -33,9 +35,13 @@ public class ClsEle implements pkg_main.IConstants {
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
 	private static List<Particle> particles;
+	private static boolean hasSelected = false;
+	private static int selected = 0;
+	private static double mouseX;
+	private static double mouseY;
 	
 	// Windows
-	private static VBox winProj;
+	private static VBox winEle;
 	private static Pane winDisplay;
 	private static HBox winButt;
 	private static HBox winInfo;
@@ -62,10 +68,13 @@ public class ClsEle implements pkg_main.IConstants {
 	private static Label selectedVelocity;
 	private static Label selectedAcceleration;
 	
+	// Charge image.
+	static Image chargeImg = new Image(ClsMain.resourceLoader("EleForce/Charge.png"));
+	
 	public static Pane drawScene() {
 		
 		// Main VBox.
-		winProj = new VBox();
+		winEle = new VBox();
 		
 		// Sub Windows
 		winDisplay = new Pane();
@@ -151,11 +160,11 @@ public class ClsEle implements pkg_main.IConstants {
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
-		winProj.getChildren().addAll(winDisplay, separator, winHelp);
+		winEle.getChildren().addAll(winDisplay, separator, winHelp);
 		
 		isPaused = true;
 		
-		return winProj;
+		return winEle;
 	}
 	
 	// Re-paint the scene in order to update the position of objects during the animation.
@@ -164,10 +173,10 @@ public class ClsEle implements pkg_main.IConstants {
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
-		winProj.getChildren().clear();
-		winProj.getChildren().addAll(winDisplay, separator, winHelp);
+		winEle.getChildren().clear();
+		winEle.getChildren().addAll(winDisplay, separator, winHelp);
 		
-		ClsMain.updatePane(winProj);
+		ClsMain.updatePane(winEle);
 	}
 	
 	// TODO: Make ball spin.
@@ -183,7 +192,6 @@ public class ClsEle implements pkg_main.IConstants {
 			return;
 		}
 		
-		charge = Integer.parseInt(txtCharge.getText());
 		eleConst = Float.parseFloat(txtEleConst.getText());
 		
 		if (eleConst <= 0) {
@@ -195,21 +203,11 @@ public class ClsEle implements pkg_main.IConstants {
 			alert.showAndWait();
 			return;
 		}
-		
-		// Initialize position of the ball.
-		initialTime = System.currentTimeMillis();
-		
-		Point2D initialPos = new Point2D(40, (WINDOW_HEIGHT / 2));
-		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
-		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Sphere.png"));
-		
-		cannonBall = new Ball(initialPos, initialVel, ballImg);
-		cannonBall.setPosition(cannonBall.getPosition().subtract(0, cannonBall.getImageView().getFitHeight()));
-		cannonBall.update();
-		
-		Group dispGroup = new Group(cannonBall.getImageView());
+		Group dispGroup = new Group();
 		winDisplay.getChildren().clear();
-		winDisplay.getChildren().add(dispGroup);
+		for (Particle p : particles) {
+			dispGroup.getChildren().add(p);
+		}
 		redrawScene();
 		
 		// Get acceleration vector.
@@ -276,8 +274,6 @@ public class ClsEle implements pkg_main.IConstants {
 	public static void doBtnDone() {
 		// Clear all animation data.
 		winDisplay.getChildren().clear();
-		seriesVel.getData().clear();
-		previousPos.setValue(0);
 		
 		// Enable start button and disable the animation buttons.
 		btnStart.setDisable(false);
@@ -323,5 +319,31 @@ public class ClsEle implements pkg_main.IConstants {
 				+ NEWLINE + NEWLINE + "The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
 
 		alert.showAndWait();
+	}
+	
+	//User presses btnAdd.
+	public static void doBtnAdd() {
+		btnAdd.setDisable(true);
+		btnSelect.setDisable(false);
+		
+		winDisplay.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				mouseX = event.getX();
+				mouseY = event.getY();
+			}
+		});
+		
+		if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
+			particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 0, Integer.parseInt(txtCharge.getText())));
+		}
+		updateAll();
+	}
+	
+	//Update all particles in the program.
+	public static void updateAll() {
+		for (Particle p : particles) {
+			p.update();
+		}
 	}
 }
