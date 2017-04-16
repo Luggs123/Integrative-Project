@@ -13,6 +13,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -24,11 +25,12 @@ import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
 
-public class ClsProj implements IProjectile, pkg_main.IConstants {
+public class ClsColl implements ICollisions, pkg_main.IConstants {
 	
-	// Animation
+	// Animation Properties
 	public static AnimationTimer mainLoop;
-	private static Ball cannonBall;
+	private static Cart cart1;
+	private static Cart cart2;
 	private static boolean isPaused;
 	private static long initialTime;
 	private static long pauseTime;
@@ -48,9 +50,12 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 	public static AppButton btnHelp;
 	
 	// Text Fields
-	private static AppTextField txtAng;
-	private static AppTextField txtGrav;
+	private static AppTextField txtM1;
+	private static AppTextField txtM2;
 	private static AppTextField txtVel;
+	
+	private static RadioButton rdbtnEla;
+	private static RadioButton rdbtnInEla;
 	
 	// Labels
 	private static Label lblHelp;
@@ -84,22 +89,19 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		winDisplay.setPrefHeight(WINDOW_HEIGHT / 2);
 		
 		// Setup button window.
-		Label lblAng = new Label("Angle of Launch (Degrees):");
-		Label lblGrav = new Label("Gravitational Constant: ");
+		Label lblM1 = new Label("Mass of Cart 1: ");
+		Label lblM2 = new Label("Mass of Cart 2: ");
 		Label lblVel = new Label("Initial Velocity: ");
-		lblAng.setTextAlignment(TextAlignment.RIGHT);
-		lblGrav.setTextAlignment(TextAlignment.RIGHT);
+		lblM1.setTextAlignment(TextAlignment.RIGHT);
+		lblM2.setTextAlignment(TextAlignment.RIGHT);
 		lblVel.setTextAlignment(TextAlignment.RIGHT);
-		lblAng.setTextFill(Color.WHITE);
-		lblGrav.setTextFill(Color.WHITE);
+		lblM1.setTextFill(Color.WHITE);
+		lblM2.setTextFill(Color.WHITE);
 		lblVel.setTextFill(Color.WHITE);
 
-		txtAng = new AppTextField("Angle of Launch");
-		txtGrav = new AppTextField("Gravitational Constant");
+		txtM1 = new AppTextField("Cart 1 Mass");
+		txtM2 = new AppTextField("Cart 2 Mass");
 		txtVel = new AppTextField("Initial Velocity");
-		txtAng.setText("45");
-		txtGrav.setText("0.03");
-		txtVel.setText("5");
 		
 		btnStart = new AppButton("Start");
 		btnDone = new AppButton("Done");
@@ -118,10 +120,10 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		vLabels.setAlignment(Pos.CENTER_RIGHT);
 		vLabels.setPadding(new Insets(15));
-		vLabels.getChildren().addAll(lblAng, lblGrav, lblVel);
+		vLabels.getChildren().addAll(lblM1, lblM2, lblVel);
 		
 		vFields.setAlignment(Pos.CENTER);
-		vFields.getChildren().addAll(txtAng, txtGrav, txtVel);
+		vFields.getChildren().addAll(txtM1, txtM2, txtVel);
 		
 		HBox buttonLayout1 = new HBox(15);
 		HBox buttonLayout2 = new HBox(15);
