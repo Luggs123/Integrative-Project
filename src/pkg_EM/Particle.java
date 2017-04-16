@@ -10,10 +10,10 @@ public class Particle extends PhysicalObject {
 	private double mass;
 	private double charge;
 	
-	public Particle(Point2D position, Image image, double mass, double charge) {
+	public Particle(Point2D position, Image image, double charge, double mass) {
 		super(position, image);
-		this.mass = mass;
 		this.charge = charge;
+		this.mass = mass;
 	}
 
 	@Override
