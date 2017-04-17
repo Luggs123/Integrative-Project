@@ -2,19 +2,11 @@ package pkg_EM;
 
 import java.util.List;
 import javafx.animation.AnimationTimer;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
@@ -38,6 +30,7 @@ public class ClsEle implements pkg_main.IConstants {
 	private static int selected = 0;
 	private static double mouseX;
 	private static double mouseY;
+	static float eleConst = 0f;
 	
 	// Windows
 	private static VBox winEle;
@@ -65,9 +58,10 @@ public class ClsEle implements pkg_main.IConstants {
 	private static Label lblHelp;
 	
 	// Data
-	private static Label selectedVelocity;
-	private static Label selectedAcceleration;
-	private static Label selectedMass;
+	private static Label selectedVelocity = new Label();
+	private static Label selectedAcceleration = new Label();
+	private static Label selectedCharge = new Label();
+	private static Label selectedMass = new Label();
 	
 	// Charge image.
 	static Image chargeImg = new Image(ClsMain.resourceLoader("EleForce/Charge.png"));
@@ -100,6 +94,9 @@ public class ClsEle implements pkg_main.IConstants {
 		lblEleConst.setTextAlignment(TextAlignment.RIGHT);
 		lblCharge.setTextAlignment(TextAlignment.RIGHT);
 		lblMass.setTextAlignment(TextAlignment.RIGHT);
+		lblEleConst.setTextFill(Color.WHITE);
+		lblCharge.setTextFill(Color.WHITE);
+		lblMass.setTextFill(Color.WHITE);
 		
 		txtEleConst = new AppTextField("Coulomb's Constant");
 		txtCharge = new AppTextField("Particle Charge");
@@ -119,13 +116,17 @@ public class ClsEle implements pkg_main.IConstants {
 		btnReset.setDisable(true);
 		btnSelect.setDisable(true);
 		btnRemove.setDisable(true);
-		
+				
 		// Add buttons and labels to winButt.
 		VBox vLabels = new VBox(30);
 		VBox vFields = new VBox(30);
 		VBox vButtons = new VBox(20);
 		
+		vLabels.setAlignment(Pos.CENTER_RIGHT);
+		vLabels.setPadding(new Insets(15));
 		vLabels.getChildren().addAll(lblEleConst, lblCharge, lblMass);
+		
+		vFields.setAlignment(Pos.CENTER);
 		vFields.getChildren().addAll(txtEleConst, txtCharge, txtMass);
 		
 		HBox buttonLayout1 = new HBox();
@@ -139,10 +140,10 @@ public class ClsEle implements pkg_main.IConstants {
 		buttonLayout2.getChildren().addAll(btnReset, btnHelp);
 		buttonLayout3.getChildren().addAll(btnAdd, btnSelect, btnRemove);		
 		
-		vButtons.setPadding(new Insets(35));
+		vButtons.setPadding(new Insets(80));
 		vButtons.getChildren().addAll(buttonLayout1, buttonLayout2, buttonLayout3);
 		
-		winButt.setPrefWidth(WINDOW_WIDTH / 2);
+		winButt.setPrefWidth(WINDOW_WIDTH * 0.75);
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
 		// Setup info window.
@@ -151,11 +152,12 @@ public class ClsEle implements pkg_main.IConstants {
 					", " + particles.get(selected).getVelocity().getY());
 			selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
 					", " + particles.get(selected).getAcceleration().getY());
+			selectedCharge.setText("Charge: " + particles.get(selected).getCharge());
 			selectedMass.setText("Mass: " + particles.get(selected).getMass());
 		}
 		
 		winInfo.setPrefWidth(WINDOW_WIDTH / 2);
-		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration, selectedMass);
+		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration, selectedCharge, selectedMass);
 		
 		// Help window.
 		lblHelp = new Label();
@@ -188,8 +190,6 @@ public class ClsEle implements pkg_main.IConstants {
 	
 	// User presses btnStart.
 	public static void doBtnStart() {
-		float eleConst = 0f;
-		
 		// Get the user inputed values and return if any of the inputs are invalid.
 		if (!txtEleConst.tryGetFloat())
 		{
@@ -241,37 +241,14 @@ public class ClsEle implements pkg_main.IConstants {
 			public void handle(long now) {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
-					// Check if the ball has reached the bottom of the screen.
-					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) + (cannonBall.getImageView().getFitHeight()))) {
-						lblHelp.setText(HELP_COMPLETE);
-					} else {
-						// Check if the ball has exceeded the screen's dimensions.
-						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
-								|| cannonBall.getPosition().getX() < (0 - cannonBall.getImageView().getFitWidth())) {
-							lblHelp.setText(HELP_OOB);
+					// Apply all forces.
+					for (Particle p : particles) {p.setAcceleration(Point2D.ZERO);
+						for (Particle r : particles) {
+							p.applyForce(p.attract(r).multiply(eleConst));
 						}
-						
-						// Graph the current data.
-						elapsedTime.setValue(System.currentTimeMillis() - initialTime);
-						
-						if (timeUntilGraph.getValue() < elapsedTime.getValue()) {
-							timeUntilGraph.add(400);
-							
-							// Get the instantaneous velocity.
-							FloatProperty position = new SimpleFloatProperty();
-							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
-							
-							NumberBinding velocity = position.subtract(previousPos).divide(400);
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime.getValue(), velocity.getValue());
-							
-							seriesVel.getData().add(dataPoint);
-							previousPos = position;
-						}
-						
-						// Apply gravitational acceleration.
-						cannonBall.applyForce(acceleration);
-						cannonBall.move();
-						cannonBall.update();
+						p.applyForce(p.getAcceleration());
+						p.move();
+						p.update();
 						redrawScene();
 					}
 				}
@@ -342,14 +319,16 @@ public class ClsEle implements pkg_main.IConstants {
 			public void handle(MouseEvent event) {
 				mouseX = event.getX();
 				mouseY = event.getY();
+				
+				if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
+					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
+							Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
+				}
+				updateAll();
 			}
 		});
 		
-		if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
-			particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
-					Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
-		}
-		updateAll();
+		
 	}
 	
 	//Update all particles in the program.

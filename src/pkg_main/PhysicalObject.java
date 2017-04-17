@@ -74,6 +74,22 @@ public abstract class PhysicalObject extends Circle {
 		return imageView;
 	}
 
+	public double getLeftBound() {
+		return this.getPosition().getX() - this.getImageView().getFitWidth() / 2;
+	}
+
+	public double getRightBound() {
+		return this.getPosition().getX() + this.getImageView().getFitWidth() / 2;
+	}
+
+	public double getLowerBound() {
+		return this.getPosition().getY() + this.getImageView().getFitHeight() / 2;
+	}
+
+	public double getUpperBound() {
+		return this.getPosition().getY() - this.getImageView().getFitHeight() / 2;
+	}
+
 	/**
 	 * Applies an acceleration force onto the object.
 	 * @param force The vector force being applied.
