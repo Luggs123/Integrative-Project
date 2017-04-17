@@ -189,7 +189,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		float gravityConst = 0f;
 		float initVel = 0f;
 		
-		// TODO: Figure out max values.
 		// Get the user inputed values and return if any of the inputs are invalid.
 		if (
 				!(txtAng.tryGetInt()
@@ -273,7 +272,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 
 			@Override
 			public void handle(long now) {
-				// TODO: Fix initialTime.
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Check if the ball has reached the bottom of the screen.
@@ -286,9 +284,10 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						mainLoop.stop();
 					} else {
 						// Check if the ball has exceeded the screen's dimensions.
-						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
-								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
+						if (cannonBall.getLowerBound() < 0 || cannonBall.getLeftBound() > WINDOW_WIDTH) {
 							lblHelp.setHelpText(HELP_OOB);	
+						} else if (lblHelp.getText().endsWith(HELP_OOB)) {
+							lblHelp.setHelpText(HELP_OOB_RETURN);
 						}
 						
 						// Apply gravitational acceleration.

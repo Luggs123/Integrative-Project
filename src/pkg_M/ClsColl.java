@@ -33,7 +33,6 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	public static AnimationTimer mainLoop;
 	private static Cart cart1;
 	private static Cart cart2;
-	private static boolean elastic;
 	private static boolean isPaused;
 	private static long initialTime;
 	private static long pauseTime;
@@ -68,10 +67,12 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	
 	// Charts
 	private static LineChart<Number, Number> chrtVel;
-	private static XYChart.Series<Number, Number> seriesVel;
+	private static XYChart.Series<Number, Number> seriesCart1;
+	private static XYChart.Series<Number, Number> seriesCart2;
 	private static long elapsedTime;
 	private static long timeUntilGraph;
-	private static FloatProperty previousPos;
+	private static FloatProperty previousPosCart1;
+	private static FloatProperty previousPosCart2;
 	
 	public static Pane drawScene() {
 		
@@ -163,9 +164,11 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
         chrtVel.setAnimated(false);
         chrtVel.setCreateSymbols(false);
 		
-		seriesVel = new XYChart.Series<Number, Number>();
-		seriesVel.setName("Velocity over Time");
-		chrtVel.getData().add(seriesVel);
+		seriesCart1 = new XYChart.Series<Number, Number>();
+		seriesCart1.setName("Velocity over Time for Cart 1");
+		seriesCart2 = new XYChart.Series<Number, Number>();
+		seriesCart2.setName("Velocity over Time for Cart 2");
+		chrtVel.getData().addAll(seriesCart1, seriesCart2);
 		
 		winInfo.setPrefWidth(3 * WINDOW_WIDTH / 8);
 		winInfo.getChildren().addAll(chrtVel);
@@ -206,7 +209,6 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		float massCart2 = 0f;
 		float initVel = 0f;
 		
-		// TODO: Figure out max values.
 		// Get the user inputed values and return if any of the inputs are invalid.
 		if (
 				!(txtM1.tryGetFloat()
@@ -253,7 +255,8 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		
 		// Initialize position of the ball.
 		initialTime = System.currentTimeMillis();
-		seriesVel.getData().clear();
+		seriesCart1.getData().clear();
+		seriesCart2.getData().clear();
 		
 		Point2D initialPos = new Point2D(0, (WINDOW_HEIGHT / 2));
 		Point2D initialVel = new Point2D(initVel, 0);
@@ -263,14 +266,16 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		cart1.setPosition(cart1.getPosition().subtract(0, cart1.getImageView().getFitHeight()));
 		cart1.update();
 		
-		cart2 = new Cart(initialPos, initialVel, ballImg, massCart2);
+		cart2 = new Cart(initialPos, Point2D.ZERO, ballImg, massCart2);
+		cart2.setVelocity(new Point2D((initVel * cart1.getMass()) / cart2.getMass(), 0));
 		cart2.setPosition(cart2.getPosition().subtract(-WINDOW_WIDTH / 2, cart2.getImageView().getFitHeight()));
 		cart2.update();
 		
 		// Initialize graph data.
 		elapsedTime = 0;
 		timeUntilGraph = 0;
-		previousPos = new SimpleFloatProperty((float) (WINDOW_HEIGHT / 2 - cart1.getPosition().getY()));
+		previousPosCart1 = new SimpleFloatProperty(0f);
+		previousPosCart2 = new SimpleFloatProperty(WINDOW_WIDTH / 2);
 		
 		Group dispGroup = new Group(cart1.getImageView(), cart2.getImageView());
 		winDisplay.getChildren().clear();
@@ -294,16 +299,25 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 			public void handle(long now) {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
+					
 					// Check which cart is moving.
 					if (cart1.isMoving() ^ cart2.isMoving()) {
 						if (cart1.isMoving()) {
+							
 							// Check if cart 1 has collided with cart 2.
 							if (cart1.getRightBound() > cart2.getLeftBound()) {
 								if (rdbtnEla.isSelected()) {
+									lblHelp.setHelpText(HELP_COLLIDE_ELASTIC);
 									cart1.setMoving(false);
 									cart2.setMoving(true);
 								} else {
+									// Apply momentum to both carts based on their velocity and masses.
+									lblHelp.setHelpText(HELP_COLLIDE_INELASTIC);
 									cart2.setMoving(true);
+									Point2D newVel = new Point2D(cart1.getVelocity().getX() * cart1.getMass()
+											/ (cart1.getMass() + cart2.getMass()), 0);
+									cart1.setVelocity(newVel);
+									cart2.setVelocity(newVel);
 								}
 								
 								return;
@@ -313,16 +327,71 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 							cart1.move();
 							cart1.update();
 						} else if (cart2.isMoving()) {
+							// Check if cart 2 has exited the screen.
+							if (cart2.getLeftBound() > WINDOW_WIDTH) {
+								lblHelp.setHelpText(HELP_COMPLETE);
+								btnStart.setDisable(false);
+								btnDone.setDisable(true);
+								btnPause.setDisable(true);
+								btnReset.setDisable(true);
+								mainLoop.stop();
+							}
+							
 							// Move cart 2.
 							cart2.move();
 							cart2.update();
 						}
 					} else if (cart1.isMoving() && cart2.isMoving()) {
-						// Move cart 1 and cart 2.
+						// Check if cart 1 has exited the screen.
+						if (cart1.getLeftBound() > WINDOW_WIDTH) {
+							lblHelp.setHelpText(HELP_COMPLETE);
+							btnStart.setDisable(false);
+							btnDone.setDisable(true);
+							btnPause.setDisable(true);
+							btnReset.setDisable(true);
+							mainLoop.stop();
+						}
+						
+						// Move cart 1 and cart 2 at the same time.
 						cart1.move();
 						cart1.update();
 						cart2.move();
 						cart2.update();
+					}
+					
+					// Graph velocity on chart.
+					elapsedTime = System.currentTimeMillis() - initialTime;
+					
+					if (timeUntilGraph < elapsedTime) {
+						if (cart1.isMoving()) {
+							timeUntilGraph += GRAPHING_DELAY;
+							// Get the instantaneous velocity.
+							FloatProperty positionCart1 = new SimpleFloatProperty();
+							positionCart1.setValue(cart1.getPosition().getX());
+							
+							NumberBinding velocityCart1 = positionCart1.subtract(previousPosCart1).divide(GRAPHING_DELAY);
+							
+							
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocityCart1.getValue().floatValue());
+							
+							seriesCart1.getData().add(dataPoint);
+							previousPosCart1 = positionCart1;
+						}
+						
+						if (cart2.isMoving()) {
+							timeUntilGraph += GRAPHING_DELAY;
+							// Get the instantaneous velocity.
+							FloatProperty positionCart2 = new SimpleFloatProperty();
+							positionCart2.setValue(cart2.getPosition().getX());
+							
+							NumberBinding velocityCart2 = positionCart2.subtract(previousPosCart2).divide(GRAPHING_DELAY);
+							
+							
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocityCart2.getValue().floatValue());
+							
+							seriesCart2.getData().add(dataPoint);
+							previousPosCart2 = positionCart2;
+						}
 					}
 				}
 			}
@@ -335,8 +404,10 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	public static void doBtnDone() {
 		// Clear all animation data.
 		winDisplay.getChildren().clear();
-		seriesVel.getData().clear();
-		previousPos.setValue(WINDOW_HEIGHT / 2);
+		seriesCart1.getData().clear();
+		seriesCart2.getData().clear();
+		previousPosCart1.setValue(0);
+		previousPosCart2.setValue(WINDOW_WIDTH / 2);
 		
 		// Enable start button and disable the animation buttons.
 		btnStart.setDisable(false);

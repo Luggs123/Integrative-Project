@@ -48,7 +48,7 @@ public class ClsHandlers implements EventHandler<MouseEvent> {
 			ClsColl.doBtnHelp();
 		}
 		
-		//Electrostatic Force
+		// Electrostatic Force
 		else if (source == ClsEle.btnStart) {
 			ClsEle.doBtnStart();
 			
