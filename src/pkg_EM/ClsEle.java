@@ -185,6 +185,13 @@ public class ClsEle implements pkg_main.IConstants {
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
+		Group dispGroup = new Group();
+		winDisplay.getChildren().clear();
+		for (Particle p : particles) {
+			dispGroup.getChildren().add(p.getImageView());
+		}
+		winDisplay.getChildren().add(dispGroup);
+		
 		winEle.getChildren().clear();
 		winEle.getChildren().addAll(winDisplay, separator, winHelp);
 		
@@ -211,12 +218,6 @@ public class ClsEle implements pkg_main.IConstants {
 			return;
 		}
 		
-		Group dispGroup = new Group();
-		winDisplay.getChildren().clear();
-		for (Particle p : particles) {
-			dispGroup.getChildren().add(p.getImageView());
-		}
-		winDisplay.getChildren().add(dispGroup);
 		redrawScene();
 
 		for (Particle p : particles) {
@@ -246,15 +247,15 @@ public class ClsEle implements pkg_main.IConstants {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Apply all forces.
-					for (Particle p : particles) {p.setAcceleration(Point2D.ZERO);
+					for (Particle p : particles) {
+						p.setAcceleration(Point2D.ZERO);
 						for (Particle r : particles) {
 							p.applyForce(p.attract(r).multiply(eleConst));
 						}
-						p.applyForce(p.getAcceleration());
 						p.move();
-						p.update();
-						redrawScene();
 					}
+					updateAll();
+					redrawScene();
 				}
 			}
 		};
@@ -307,8 +308,8 @@ public class ClsEle implements pkg_main.IConstants {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(null);
 		alert.setHeaderText(null);
-		alert.setContentText("This animation will launch a cannon ball at a specified angle and velocity." + NEWLINE + NEWLINE + 
-				"The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
+		alert.setContentText("This animation will display the interaction of many charged particles undergoing electrostatic force." 
+				+ NEWLINE + NEWLINE +  "The user may also select Coulomb's Constant to magnify the aforementioned forces.");
 
 		alert.showAndWait();
 	}
@@ -322,12 +323,44 @@ public class ClsEle implements pkg_main.IConstants {
 		winDisplay.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				if (!txtCharge.tryGetFloat()) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Input Value Error!");
+					alert.setHeaderText(null);
+					alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
+
+					alert.showAndWait();
+					return;
+				}
+				
+				if (!txtMass.tryGetFloat() || Float.parseFloat(txtMass.getText()) < 0) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Input Value Error!");
+					alert.setHeaderText(null);
+					alert.setContentText("The value inputed for the Particle Charge must be a number.");
+
+					alert.showAndWait();
+					return;
+				}
+				
 				mouseX = event.getX();
 				mouseY = event.getY();
+
+				float addCharge = Float.parseFloat(txtCharge.getText());
+				float addMass = Float.parseFloat(txtMass.getText());
+				
+				if (!txtMass.tryGetFloat() || addMass < 0) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Input Value Error!");
+					alert.setHeaderText(null);
+					alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
+
+					alert.showAndWait();
+					return;
+				}
 				
 				if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
-					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
-							Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
+					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, addCharge, addMass));
 				}
 				btnRemove.setDisable(false);
 				updateAll();
