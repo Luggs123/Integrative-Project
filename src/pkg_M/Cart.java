@@ -4,9 +4,28 @@ import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
 public class Cart extends pkg_main.PhysicalObject {
+	private boolean moving;
+	private float mass;
+	
+	public boolean isMoving() {
+		return moving;
+	}
 
-	public Cart(Point2D position, Point2D velocity, Image image) {
+	public void setMoving(boolean moving) {
+		this.moving = moving;
+	}
+	
+	public float getMass() {
+		return mass;
+	}
+
+	public Cart(Point2D position, Point2D velocity, Image image, float mass) {
 		super(position, velocity, image);
+		
+		this.mass = mass;
+		setMoving(false);
+		this.imageView.setFitWidth(100);
+		this.imageView.setFitHeight(100);
 	}
 
 	@Override

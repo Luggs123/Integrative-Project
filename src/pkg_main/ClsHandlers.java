@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import pkg_EM.ClsEle;
+import pkg_M.ClsColl;
 import pkg_M.ClsProj;
 
 // Button Handlers
@@ -29,6 +30,22 @@ public class ClsHandlers implements EventHandler<MouseEvent> {
 		
 		} else if (source == ClsProj.btnHelp) {
 			ClsProj.doBtnHelp();
+		
+		// Collisions
+		} else if (source == ClsColl.btnStart) {
+			ClsColl.doBtnStart();
+			
+		} else if (source == ClsColl.btnDone) {
+			ClsColl.doBtnDone();
+			
+		} else if (source == ClsColl.btnPause) {
+			ClsColl.doBtnPause();
+			
+		} else if (source == ClsColl.btnReset) {
+			ClsColl.doBtnReset();
+		
+		} else if (source == ClsColl.btnHelp) {
+			ClsColl.doBtnHelp();
 		}
 	}
 }
@@ -40,8 +57,12 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		Object source = event.getSource();
 		
+		// Mechanics.
 		if (source == ClsMain.menuProj) {
 			ClsMain.updatePane(ClsProj.drawScene());
+			
+		} else if (source == ClsMain.menuColl) {
+			ClsMain.updatePane(ClsColl.drawScene());
 
 		} else if (source == ClsMain.menuEle) {
 			ClsMain.updatePane(ClsEle.drawScene());

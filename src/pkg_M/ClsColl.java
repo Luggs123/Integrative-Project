@@ -14,6 +14,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -24,6 +25,7 @@ import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
+import pkg_main.HelpLabel;
 
 public class ClsColl implements ICollisions, pkg_main.IConstants {
 	
@@ -31,6 +33,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	public static AnimationTimer mainLoop;
 	private static Cart cart1;
 	private static Cart cart2;
+	private static boolean elastic;
 	private static boolean isPaused;
 	private static long initialTime;
 	private static long pauseTime;
@@ -54,11 +57,14 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	private static AppTextField txtM2;
 	private static AppTextField txtVel;
 	
+	
+	// Radio Buttons
+	private static ToggleGroup rdbtnGroup;
 	private static RadioButton rdbtnEla;
 	private static RadioButton rdbtnInEla;
 	
 	// Labels
-	private static Label lblHelp;
+	private static HelpLabel lblHelp;
 	
 	// Charts
 	private static LineChart<Number, Number> chrtVel;
@@ -125,17 +131,27 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		vFields.setAlignment(Pos.CENTER);
 		vFields.getChildren().addAll(txtM1, txtM2, txtVel);
 		
+		rdbtnGroup = new ToggleGroup();
+		rdbtnEla = new RadioButton("Elastic");
+		rdbtnEla.setToggleGroup(rdbtnGroup);
+		rdbtnEla.setSelected(true);
+		rdbtnInEla = new RadioButton("Inelastic");
+		rdbtnInEla.setToggleGroup(rdbtnGroup);
+		
 		HBox buttonLayout1 = new HBox(15);
 		HBox buttonLayout2 = new HBox(15);
+		HBox buttonLayout3 = new HBox();
 		buttonLayout1.setAlignment(Pos.BOTTOM_CENTER);
 		buttonLayout2.setAlignment(Pos.BOTTOM_CENTER);
+		buttonLayout3.setAlignment(Pos.BOTTOM_CENTER);
 		
 		buttonLayout1.getChildren().addAll(btnStart, btnDone, btnPause);
 		buttonLayout2.getChildren().addAll(btnReset, btnHelp);
+		buttonLayout3.getChildren().addAll(rdbtnEla, rdbtnInEla);
 		
 		vButtons.setPadding(new Insets(10));
 		vButtons.setAlignment(Pos.CENTER);
-		vButtons.getChildren().addAll(buttonLayout1, buttonLayout2);
+		vButtons.getChildren().addAll(buttonLayout1, buttonLayout2, buttonLayout3);
 		
 		winButt.setPrefWidth(5 * WINDOW_WIDTH / 8);
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
@@ -155,7 +171,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		winInfo.getChildren().addAll(chrtVel);
 		
 		// Help window.
-		lblHelp = new Label();
+		lblHelp = new HelpLabel(TITLE);
 		lblHelp.setTextFill(Color.WHITE);
 		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
 		winHelp.getChildren().add(lblHelp);
@@ -243,26 +259,23 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		Point2D initialVel = new Point2D(initVel, 0);
 		Image ballImg = new Image(ClsMain.resourceLoader("Collisions/Cart.png"));
 		
-		cart1 = new Cart(initialPos, initialVel, ballImg);
+		cart1 = new Cart(initialPos, initialVel, ballImg, massCart1);
 		cart1.setPosition(cart1.getPosition().subtract(0, cart1.getImageView().getFitHeight()));
 		cart1.update();
 		
-		cart2 = new Cart(initialPos, initialVel, ballImg);
+		cart2 = new Cart(initialPos, initialVel, ballImg, massCart2);
 		cart2.setPosition(cart2.getPosition().subtract(-WINDOW_WIDTH / 2, cart2.getImageView().getFitHeight()));
 		cart2.update();
 		
 		// Initialize graph data.
 		elapsedTime = 0;
 		timeUntilGraph = 0;
-		previousPos = new SimpleFloatProperty((float) (WINDOW_HEIGHT / 2 - cannonBall.getPosition().getY()));
+		previousPos = new SimpleFloatProperty((float) (WINDOW_HEIGHT / 2 - cart1.getPosition().getY()));
 		
-		Group dispGroup = new Group(cannonBall.getImageView());
+		Group dispGroup = new Group(cart1.getImageView(), cart2.getImageView());
 		winDisplay.getChildren().clear();
 		winDisplay.getChildren().add(dispGroup);
 		redrawScene();
-		
-		// Get acceleration vector.
-		Point2D acceleration = new Point2D(0, gravityConst);
 		
 		// Disable start button and enable the rest.
 		btnStart.setDisable(true);
@@ -274,51 +287,42 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		
 		// Generate main animation loop.
 		isPaused = false;
+		cart1.setMoving(true);
 		mainLoop = new AnimationTimer() {
 
 			@Override
 			public void handle(long now) {
-				// TODO: Fix initialTime.
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
-					// Check if the ball has reached the bottom of the screen.
-					if (cannonBall.getPosition().getY() > ((WINDOW_HEIGHT / 2) - (cannonBall.getImageView().getFitHeight()))) {
-						lblHelp.setHelpText(HELP_COMPLETE);
-						btnStart.setDisable(false);
-						btnDone.setDisable(true);
-						btnPause.setDisable(true);
-						btnReset.setDisable(true);
-						mainLoop.stop();
-					} else {
-						// Check if the ball has exceeded the screen's dimensions.
-						if (cannonBall.getPosition().getY() < (0 - cannonBall.getImageView().getFitHeight())
-								|| cannonBall.getPosition().getX() > (WINDOW_WIDTH + cannonBall.getImageView().getFitWidth())) {
-							lblHelp.setText(HELP_OOB);	
+					// Check which cart is moving.
+					if (cart1.isMoving() ^ cart2.isMoving()) {
+						if (cart1.isMoving()) {
+							// Check if cart 1 has collided with cart 2.
+							if (cart1.getRightBound() > cart2.getLeftBound()) {
+								if (rdbtnEla.isSelected()) {
+									cart1.setMoving(false);
+									cart2.setMoving(true);
+								} else {
+									cart2.setMoving(true);
+								}
+								
+								return;
+							}
+							
+							// Move cart 1.
+							cart1.move();
+							cart1.update();
+						} else if (cart2.isMoving()) {
+							// Move cart 2.
+							cart2.move();
+							cart2.update();
 						}
-						
-						// Apply gravitational acceleration.
-						cannonBall.applyForce(acceleration);
-						cannonBall.getImageView().setRotate(cannonBall.getImageView().getRotate() + cannonBall.getVelocity().getX() * 10);
-						cannonBall.move();
-						cannonBall.update();
-						redrawScene();
-						
-						// Graph the current data.
-						elapsedTime = System.currentTimeMillis() - initialTime;
-						
-						if (timeUntilGraph < elapsedTime) {
-							timeUntilGraph += GRAPHING_DELAY;
-							
-							// Get the instantaneous velocity.
-							FloatProperty position = new SimpleFloatProperty();
-							position.setValue((WINDOW_HEIGHT / 2) - cannonBall.getPosition().getY());
-							
-							NumberBinding velocity = position.subtract(previousPos).divide(GRAPHING_DELAY);
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocity.getValue().floatValue());
-							
-							seriesVel.getData().add(dataPoint);
-							previousPos = position;
-						}
+					} else if (cart1.isMoving() && cart2.isMoving()) {
+						// Move cart 1 and cart 2.
+						cart1.move();
+						cart1.update();
+						cart2.move();
+						cart2.update();
 					}
 				}
 			}

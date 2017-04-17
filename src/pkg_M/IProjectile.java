@@ -2,7 +2,7 @@ package pkg_M;
 
 public interface IProjectile {
 	// Strings
-	final String TITLE = "Project Motion";
+	final String TITLE = "Projectile Motion";
 	final String HELP_OOB = "The ball seems to have flown off-screen.";
 	final String HELP_COMPLETE = "The ball has touched the ground. Animation stopped.";
 	

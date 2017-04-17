@@ -6,7 +6,7 @@ import pkg_main.PhysicalObject;
 import backend.Settings;
 
 public class Particle extends PhysicalObject {
-	private boolean selected = false;
+	private boolean selected;
 	private double mass;
 	private double charge;
 	
@@ -14,6 +14,7 @@ public class Particle extends PhysicalObject {
 		super(position, image);
 		this.charge = charge;
 		this.mass = mass;
+		selected = false;
 	}
 
 	@Override

@@ -207,10 +207,11 @@ public class ClsEle implements pkg_main.IConstants {
 			alert.showAndWait();
 			return;
 		}
+		
 		Group dispGroup = new Group();
 		winDisplay.getChildren().clear();
 		for (Particle p : particles) {
-			dispGroup.getChildren().add(p);
+			dispGroup.getChildren().add(p.getImageView());
 		}
 		winDisplay.getChildren().add(dispGroup);
 		redrawScene();

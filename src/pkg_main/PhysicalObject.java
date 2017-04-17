@@ -74,20 +74,22 @@ public abstract class PhysicalObject extends Circle {
 		return imageView;
 	}
 
-	public double getLeftBound() {
-		return this.getPosition().getX() - this.getImageView().getFitWidth() / 2;
+	
+	// Retrieve the coordinates of the object's boundaries.
+	public float getLeftBound() {
+		return (float) (this.getPosition().getX() - this.getImageView().getFitWidth() / 2);
 	}
 
-	public double getRightBound() {
-		return this.getPosition().getX() + this.getImageView().getFitWidth() / 2;
+	public float getRightBound() {
+		return (float) (this.getPosition().getX() + this.getImageView().getFitWidth() / 2);
 	}
 
-	public double getLowerBound() {
-		return this.getPosition().getY() + this.getImageView().getFitHeight() / 2;
+	public float getLowerBound() {
+		return (float) (this.getPosition().getY() + this.getImageView().getFitHeight() / 2);
 	}
 
-	public double getUpperBound() {
-		return this.getPosition().getY() - this.getImageView().getFitHeight() / 2;
+	public float getUpperBound() {
+		return (float) (this.getPosition().getY() - this.getImageView().getFitHeight() / 2);
 	}
 
 	/**
