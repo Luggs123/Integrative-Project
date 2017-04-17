@@ -1,4 +1,4 @@
-package pkg_EM;
+package pkg_Ele;
 
 public interface IElectrostatic {
 	final String HELP_ADD = "You can now add charges by clicking on the display.";

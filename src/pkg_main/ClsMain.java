@@ -1,9 +1,9 @@
 //TODO: CHECK PROGRAM FUNCTION
-/*** Program Function; To create and display a list of given friends.
+/** Program Function; To generate a series of animations relating to various physics topics.
 *** Creator; Paul Gaudnik, Mark Jarjour, Michael Luger
-*** Submission Date; November 15th, 2016
-*** Date Last Modified; October 19th, 2016
-***/
+*** Submission Date; April 18th, 2017
+*** Date Last Modified; April 17th, 2017
+**/
 
 package pkg_main;
 
@@ -11,9 +11,11 @@ import java.io.File;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -41,14 +43,7 @@ public class ClsMain extends Application implements IConstants {
 	public static Menu menuProg = new Menu("Help");
 	public static AppMenuItem menuCred = new AppMenuItem("Credits");
 	public static AppMenuItem menuExit = new AppMenuItem("Exit Program");
-	public static AppMenuItem menuConstruction = new AppMenuItem("In Construction");
-	
-	// Set the main window to point to a different scene.
-	public static void updatePane(Pane newPane) {
-		winMain.getChildren().clear();
-		
-		winMain.getChildren().addAll(mainMenu, newPane);
-	}
+	public static AppMenuItem menuWIP = new AppMenuItem("In Construction");
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -61,9 +56,9 @@ public class ClsMain extends Application implements IConstants {
 		lblGreeting.setTranslateY(500);
 		
 		// Add the menu components to the main window.
-		menuMech.getItems().addAll(menuProj, menuColl);
-		menuWav.getItems().addAll(menuStr, menuOsci);
-		menuEM.getItems().addAll(menuEle);
+		menuMech.getItems().addAll(menuProj, menuColl, menuWIP);
+		menuWav.getItems().addAll(menuStr, menuOsci, menuWIP);
+		menuEM.getItems().addAll(menuEle, menuWIP);
 		menuProg.getItems().addAll(menuCred, menuExit);
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 		
@@ -83,8 +78,33 @@ public class ClsMain extends Application implements IConstants {
 		launch(args);
 	}
 	
+	// Set the main window to point to a different scene.
+	public static void updatePane(Pane newPane) {
+		winMain.getChildren().clear();
+		
+		winMain.getChildren().addAll(mainMenu, newPane);
+	}
+	
 	// Returns a file from ../ProjectDirectory/Assets/
 	public static String resourceLoader(String filename) {
 		return new File("Assets/" + filename).toURI().toString();
+	}
+	
+	// Throw an alert that the following formula is in construction.
+	public static void inConstruction(String formulaName) {
+		String name = EMP_STR;
+		
+		if (formulaName == null) {
+			name = "following";
+		} else {
+			name = formulaName;
+		}
+		
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("In Construction");
+		alert.setHeaderText(null);
+		alert.setContentText("The " + name + " formula is under construction.");
+
+		alert.showAndWait();
 	}
 }

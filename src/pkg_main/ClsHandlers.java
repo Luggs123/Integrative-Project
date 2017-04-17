@@ -7,7 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import pkg_Coll.ClsColl;
-import pkg_EM.ClsEle;
+import pkg_Ele.ClsEle;
 import pkg_Proj.ClsProj;
 
 // Button Handlers
@@ -98,6 +98,12 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 			ClsMain.updatePane(ClsEle.drawScene());
 		
 		// Other
+		} else if (source == ClsMain.menuStr) {
+			ClsMain.inConstruction("Waves on a String");
+			
+		} else if (source == ClsMain.menuOsci) {
+			ClsMain.inConstruction("Oscillation");
+			
 		} else if (source == ClsMain.menuCred) {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Integrative Project");
@@ -110,7 +116,7 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 			Platform.exit();
 			
 		} else {
-			
+			ClsMain.inConstruction(null);
 		}
 	}
 }
