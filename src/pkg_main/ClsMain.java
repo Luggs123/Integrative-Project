@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 
 public class ClsMain extends Application implements IConstants {
 	
-	protected static Pane winMain = new VBox();
+	protected static VBox winMain = new VBox();
 	protected static Scene sceneMain = new Scene(winMain, WINDOW_WIDTH, WINDOW_HEIGHT);
 	
 	// Menu bar.
