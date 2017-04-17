@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
@@ -57,10 +58,10 @@ public class ClsEle implements pkg_main.IConstants {
 	private static Label lblHelp;
 	
 	// Data
-	private static Label selectedVelocity;
-	private static Label selectedAcceleration;
-	private static Label selectedCharge;
-	private static Label selectedMass;
+	private static Label selectedVelocity = new Label();
+	private static Label selectedAcceleration = new Label();
+	private static Label selectedCharge = new Label();
+	private static Label selectedMass = new Label();
 	
 	// Charge image.
 	static Image chargeImg = new Image(ClsMain.resourceLoader("EleForce/Charge.png"));
@@ -93,6 +94,9 @@ public class ClsEle implements pkg_main.IConstants {
 		lblEleConst.setTextAlignment(TextAlignment.RIGHT);
 		lblCharge.setTextAlignment(TextAlignment.RIGHT);
 		lblMass.setTextAlignment(TextAlignment.RIGHT);
+		lblEleConst.setTextFill(Color.WHITE);
+		lblCharge.setTextFill(Color.WHITE);
+		lblMass.setTextFill(Color.WHITE);
 		
 		txtEleConst = new AppTextField("Coulomb's Constant");
 		txtCharge = new AppTextField("Particle Charge");
@@ -118,7 +122,11 @@ public class ClsEle implements pkg_main.IConstants {
 		VBox vFields = new VBox(30);
 		VBox vButtons = new VBox(20);
 		
+		vLabels.setAlignment(Pos.CENTER_RIGHT);
+		vLabels.setPadding(new Insets(15));
 		vLabels.getChildren().addAll(lblEleConst, lblCharge, lblMass);
+		
+		vFields.setAlignment(Pos.CENTER);
 		vFields.getChildren().addAll(txtEleConst, txtCharge, txtMass);
 		
 		HBox buttonLayout1 = new HBox();
@@ -132,10 +140,10 @@ public class ClsEle implements pkg_main.IConstants {
 		buttonLayout2.getChildren().addAll(btnReset, btnHelp);
 		buttonLayout3.getChildren().addAll(btnAdd, btnSelect, btnRemove);		
 		
-		vButtons.setPadding(new Insets(35));
+		vButtons.setPadding(new Insets(80));
 		vButtons.getChildren().addAll(buttonLayout1, buttonLayout2, buttonLayout3);
 		
-		winButt.setPrefWidth(WINDOW_WIDTH / 2);
+		winButt.setPrefWidth(WINDOW_WIDTH * 0.75);
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
 		// Setup info window.
@@ -311,14 +319,16 @@ public class ClsEle implements pkg_main.IConstants {
 			public void handle(MouseEvent event) {
 				mouseX = event.getX();
 				mouseY = event.getY();
+				
+				if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
+					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
+							Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
+				}
+				updateAll();
 			}
 		});
 		
-		if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
-			particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
-					Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
-		}
-		updateAll();
+		
 	}
 	
 	//Update all particles in the program.
