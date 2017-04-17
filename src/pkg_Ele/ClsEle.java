@@ -162,7 +162,7 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		
 		// Help window.
 		lblHelp = new Label();
-		winHelp.setPrefHeight(40);
+		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
 		winHelp.getChildren().add(lblHelp);
 		
 		// Add all the panes to the main window.
