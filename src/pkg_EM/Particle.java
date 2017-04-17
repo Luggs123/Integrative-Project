@@ -19,7 +19,7 @@ public class Particle extends PhysicalObject {
 
 	@Override
 	public void applyForce(Point2D force) {
-		this.getAcceleration().add(force.multiply(1.0 / this.getMass()));
+		this.setAcceleration(this.getAcceleration().add(force.multiply(1.0 / this.getMass())));
 	}
 	
 	/**
