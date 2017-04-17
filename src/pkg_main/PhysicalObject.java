@@ -9,22 +9,22 @@ public abstract class PhysicalObject extends Circle {
 	/**
 	 * The position of the object.
 	 **/
-	protected Point2D position;
+	private Point2D position;
 	
 	/**
 	 * The velocity of the object.
 	 **/
-	protected Point2D velocity;
+	private Point2D velocity;
 	
 	/**
 	 * The acceleration of the object.
 	 **/
-	protected Point2D acceleration;
+	private Point2D acceleration;
 	
 	/**
 	 * The image that will represent the object.
 	 **/
-	protected Image image;
+	private Image image;
 	protected ImageView imageView;
 
 	public PhysicalObject(Point2D position, Point2D velocity, Image image) {

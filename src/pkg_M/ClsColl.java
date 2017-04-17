@@ -165,9 +165,9 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
         chrtVel.setCreateSymbols(false);
 		
 		seriesCart1 = new XYChart.Series<Number, Number>();
-		seriesCart1.setName("Velocity over Time for Cart 1");
+		seriesCart1.setName("Cart 1 Velocity");
 		seriesCart2 = new XYChart.Series<Number, Number>();
-		seriesCart2.setName("Velocity over Time for Cart 2");
+		seriesCart2.setName("Cart 2 Velocity");
 		chrtVel.getData().addAll(seriesCart1, seriesCart2);
 		
 		winInfo.setPrefWidth(3 * WINDOW_WIDTH / 8);

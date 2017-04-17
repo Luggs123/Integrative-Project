@@ -32,14 +32,16 @@ public class ClsMain extends Application implements IConstants {
 	public static AppMenuItem menuColl = new AppMenuItem("Collisions");
 	
 	public static Menu menuWav = new Menu("Waves, Optics & Modern Physics");
-	public static AppMenuItem menuConstruction = new AppMenuItem("In Construction");
+	public static AppMenuItem menuStr = new AppMenuItem("Waves on a String");
+	public static AppMenuItem menuOsci = new AppMenuItem("Oscillation");
 	
 	public static Menu menuEM = new Menu("Electricity & Magnetism");
 	public static AppMenuItem menuEle = new AppMenuItem("Electrostatic Force");
 	
-	public static Menu menuProg = new Menu("Program");
-	
+	public static Menu menuProg = new Menu("Help");
+	public static AppMenuItem menuCred = new AppMenuItem("Credits");
 	public static AppMenuItem menuExit = new AppMenuItem("Exit Program");
+	public static AppMenuItem menuConstruction = new AppMenuItem("In Construction");
 	
 	// Set the main window to point to a different scene.
 	public static void updatePane(Pane newPane) {
@@ -60,8 +62,9 @@ public class ClsMain extends Application implements IConstants {
 		
 		// Add the menu components to the main window.
 		menuMech.getItems().addAll(menuProj, menuColl);
-		menuProg.getItems().add(menuExit);
-		menuEM.getItems().add(menuEle);
+		menuWav.getItems().addAll(menuStr, menuOsci);
+		menuEM.getItems().addAll(menuEle);
+		menuProg.getItems().addAll(menuCred, menuExit);
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 		
 		winMain.getChildren().addAll(mainMenu, lblGreeting);

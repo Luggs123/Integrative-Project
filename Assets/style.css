@@ -29,7 +29,6 @@
 }
 
 .win-help {
-    -fx-font-family: "Comic Sans MS";
     -fx-border-width: 1px 0px 0px 0px;
     -fx-background-color: rgb(0, 117, 192);
 }

@@ -3,6 +3,8 @@ package pkg_main;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import pkg_EM.ClsEle;
 import pkg_M.ClsColl;
@@ -91,11 +93,23 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 		} else if (source == ClsMain.menuColl) {
 			ClsMain.updatePane(ClsColl.drawScene());
 
+		// Electricity.
 		} else if (source == ClsMain.menuEle) {
 			ClsMain.updatePane(ClsEle.drawScene());
+		
+		// Other
+		} else if (source == ClsMain.menuCred) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Integrative Project");
+			alert.setHeaderText(null);
+			alert.setContentText("Created by Michael Luger & Mark Jarjour.");
+
+			alert.showAndWait();
 			
-		}	else if (source == ClsMain.menuExit) {
+		} else if (source == ClsMain.menuExit) {
 			Platform.exit();
+			
+		} else {
 			
 		}
 	}
