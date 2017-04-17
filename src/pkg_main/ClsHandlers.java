@@ -47,6 +47,33 @@ public class ClsHandlers implements EventHandler<MouseEvent> {
 		} else if (source == ClsColl.btnHelp) {
 			ClsColl.doBtnHelp();
 		}
+		
+		//Electrostatic Force
+		else if (source == ClsEle.btnStart) {
+			ClsEle.doBtnStart();
+			
+		} else if (source == ClsEle.btnDone) {
+			ClsEle.doBtnDone();
+			
+		} else if (source == ClsEle.btnPause) {
+			ClsEle.doBtnPause();
+			
+		} else if (source == ClsEle.btnReset) {
+			ClsEle.doBtnReset();
+		
+		} else if (source == ClsEle.btnHelp) {
+			ClsEle.doBtnHelp();
+			
+		} else if (source == ClsEle.btnAdd) {
+			ClsEle.doBtnAdd();
+			
+		} else if (source == ClsEle.btnSelect) {
+			ClsEle.doBtnSelect();
+			
+		} else if (source == ClsEle.btnRemove) {
+			ClsEle.doBtnRemove();
+			
+		}
 	}
 }
 
