@@ -13,7 +13,7 @@ public class ColourGradient {
 	 */
 	private Color finalColour;
 	
-	//The differences in Red, Green, and Blue components between the starting and ending colours.
+	// The differences in Red, Green, and Blue components between the starting and ending colours.
 	private double diffRed;
 	private double diffGreen;
 	private double diffBlue;
