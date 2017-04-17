@@ -1,4 +1,4 @@
-package pkg_EM;
+package pkg_Ele;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,10 +18,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import pkg_Ele.IElectrostatic;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
-import pkg_EM.IElectrostatic;
 
 public class ClsEle implements pkg_main.IConstants {
 	
@@ -163,7 +163,7 @@ public class ClsEle implements pkg_main.IConstants {
 		
 		// Help window.
 		lblHelp = new Label();
-		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
+		winHelp.setPrefHeight(40);
 		winHelp.getChildren().add(lblHelp);
 		
 		// Add all the panes to the main window.

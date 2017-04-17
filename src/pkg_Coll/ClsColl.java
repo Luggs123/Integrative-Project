@@ -176,7 +176,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		// Help window.
 		lblHelp = new HelpLabel(TITLE);
 		lblHelp.setTextFill(Color.WHITE);
-		winHelp.setPrefHeight(WINDOW_HEIGHT / 16);
+		winHelp.setPrefHeight(40);
 		winHelp.getChildren().add(lblHelp);
 		
 		// Add all the panes to the main window.
