@@ -1,4 +1,4 @@
-package pkg_M;
+package pkg_Proj;
 
 public interface IProjectile {
 	// Strings

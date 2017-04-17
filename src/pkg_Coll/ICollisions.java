@@ -1,4 +1,4 @@
-package pkg_M;
+package pkg_Coll;
 
 public interface ICollisions {
 	// Strings

@@ -1,4 +1,4 @@
-package pkg_M;
+package pkg_Proj;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;

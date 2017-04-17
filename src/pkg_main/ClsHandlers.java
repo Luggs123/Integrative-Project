@@ -6,9 +6,9 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
+import pkg_Coll.ClsColl;
 import pkg_EM.ClsEle;
-import pkg_M.ClsColl;
-import pkg_M.ClsProj;
+import pkg_Proj.ClsProj;
 
 // Button Handlers
 public class ClsHandlers implements EventHandler<MouseEvent> {
