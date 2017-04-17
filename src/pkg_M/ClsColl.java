@@ -239,13 +239,17 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		initialTime = System.currentTimeMillis();
 		seriesVel.getData().clear();
 		
-		Point2D initialPos = new Point2D(40, (WINDOW_HEIGHT / 2));
-		Point2D initialVel = new Point2D(initVel * Math.cos(launchAngle * DEG_TO_RAD), -initVel * Math.sin(launchAngle * DEG_TO_RAD));
-		Image ballImg = new Image(ClsMain.resourceLoader("ProjMotion/Sphere.png"));
+		Point2D initialPos = new Point2D(0, (WINDOW_HEIGHT / 2));
+		Point2D initialVel = new Point2D(initVel, 0);
+		Image ballImg = new Image(ClsMain.resourceLoader("Collisions/Cart.png"));
 		
-		cannonBall = new Ball(initialPos, initialVel, ballImg);
-		cannonBall.setPosition(cannonBall.getPosition().subtract(0, cannonBall.getImageView().getFitHeight()));
-		cannonBall.update();
+		cart1 = new Cart(initialPos, initialVel, ballImg);
+		cart1.setPosition(cart1.getPosition().subtract(0, cart1.getImageView().getFitHeight()));
+		cart1.update();
+		
+		cart2 = new Cart(initialPos, initialVel, ballImg);
+		cart2.setPosition(cart2.getPosition().subtract(-WINDOW_WIDTH / 2, cart2.getImageView().getFitHeight()));
+		cart2.update();
 		
 		// Initialize graph data.
 		elapsedTime = 0;
