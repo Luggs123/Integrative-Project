@@ -18,12 +18,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import pkg_Ele.IElectrostatic;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
 
-public class ClsEle implements pkg_main.IConstants {
+public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
@@ -226,7 +225,7 @@ public class ClsEle implements pkg_main.IConstants {
 	public static void doBtnStart() {
 		initialParticles = particles;
 		
-		if (particles.size() == 0) {
+		if (particles.isEmpty()) {
 			return;
 		}
 		
@@ -350,69 +349,66 @@ public class ClsEle implements pkg_main.IConstants {
 		btnAdd.setDisable(true);
 		btnSelect.setDisable(false);
 		
-		winDisplay.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				if (!txtCharge.tryGetFloat()) {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Input Value Error!");
-					alert.setHeaderText(null);
-					alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
-
-					alert.showAndWait();
-					return;
-				}
-				
-				if (!txtMass.tryGetFloat() || Float.parseFloat(txtMass.getText()) < 0) {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Input Value Error!");
-					alert.setHeaderText(null);
-					alert.setContentText("The value inputed for the Particle Charge must be a number.");
-
-					alert.showAndWait();
-					return;
-				}
-				
-				mouseX = event.getX();
-				mouseY = event.getY();
-				
-				boolean hasCollision = false;
-				for (Particle p : particles) {
-					if (p.getPosition().subtract(mouseX, mouseY).magnitude() < 25) {
-						hasCollision = true;
-					}
-				}
-
-				float addCharge = Float.parseFloat(txtCharge.getText());
-				float addMass = Float.parseFloat(txtMass.getText());
-				
-				if (!txtMass.tryGetFloat() || addMass < 0) {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Input Value Error!");
-					alert.setHeaderText(null);
-					alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
-
-					alert.showAndWait();
-					return;
-				}
-				
-				if (hasCollision) {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Particle Placement Error!");
-					alert.setHeaderText(null);
-					alert.setContentText("The placement of the particle you specified cannot touch any other existing particle.");
-
-					alert.showAndWait();
-					return;
-				}
-				
-				if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2 || hasCollision)) {
-					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, addCharge, addMass));
-				}
-				btnRemove.setDisable(false);
-				updateAll();
-			}
-		});
+		winDisplay.setOnMouseClicked((MouseEvent event) -> {
+                    if (!txtCharge.tryGetFloat()) {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setTitle("Input Value Error!");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
+                        
+                        alert.showAndWait();
+                        return;
+                    }
+                    
+                    if (!txtMass.tryGetFloat() || Float.parseFloat(txtMass.getText()) < 0) {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setTitle("Input Value Error!");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The value inputed for the Particle Charge must be a number.");
+                        
+                        alert.showAndWait();
+                        return;
+                    }
+                    
+                    mouseX = event.getX();
+                    mouseY = event.getY();
+                    
+                    boolean hasCollision = false;
+                    for (Particle p : particles) {
+                        if (p.getPosition().subtract(mouseX, mouseY).magnitude() < 25) {
+                            hasCollision = true;
+                        }
+                    }
+                    
+                    float addCharge = Float.parseFloat(txtCharge.getText());
+                    float addMass = Float.parseFloat(txtMass.getText());
+                    
+                    if (!txtMass.tryGetFloat() || addMass < 0) {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setTitle("Input Value Error!");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
+                        
+                        alert.showAndWait();
+                        return;
+                    }
+                    
+                    if (hasCollision) {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setTitle("Particle Placement Error!");
+                        alert.setHeaderText(null);
+                        alert.setContentText("The placement of the particle you specified cannot touch any other existing particle.");
+                        
+                        alert.showAndWait();
+                        return;
+                    }
+                    
+                    if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2 || hasCollision)) {
+                        particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, addCharge, addMass));
+                    }
+                    btnRemove.setDisable(false);
+                    updateAll();
+                });
 		
 		lblHelp.setText(IElectrostatic.HELP_ADD);
 	}
@@ -421,19 +417,15 @@ public class ClsEle implements pkg_main.IConstants {
 		btnSelect.setDisable(true);
 		btnAdd.setDisable(false);
 		
-		winDisplay.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				for (Particle p : particles) {
-					if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
-						hasSelected = true;
-						selected = particles.indexOf(p);
-					}
-				}
-				redrawScene();
-			}
-		});
+		winDisplay.setOnMouseClicked((MouseEvent event) -> {
+                    for (Particle p : particles) {
+                        if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
+                            hasSelected = true;
+                            selected = particles.indexOf(p);
+                        }
+                    }
+                    redrawScene();
+                });
 		lblHelp.setText(IElectrostatic.HELP_SELECT);
 	}
 	

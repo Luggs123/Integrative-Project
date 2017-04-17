@@ -5,13 +5,13 @@ import javafx.scene.image.Image;
 
 public class Cart extends pkg_main.PhysicalObject {
 	private boolean moving;
-	private float mass;
+	private final float mass;
 	
 	public boolean isMoving() {
 		return moving;
 	}
 
-	public void setMoving(boolean moving) {
+	public final void setMoving(boolean moving) {
 		this.moving = moving;
 	}
 	
@@ -23,7 +23,7 @@ public class Cart extends pkg_main.PhysicalObject {
 		super(position, velocity, image);
 		
 		this.mass = mass;
-		setMoving(false);
+		this.setMoving(false);
 		this.imageView.setFitWidth(100);
 		this.imageView.setFitHeight(100);
 	}

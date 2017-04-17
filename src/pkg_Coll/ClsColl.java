@@ -160,13 +160,13 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		// Setup info window.
 		final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
-        chrtVel = new LineChart<Number, Number>(xAxis, yAxis);
+        chrtVel = new LineChart<>(xAxis, yAxis);
         chrtVel.setAnimated(false);
         chrtVel.setCreateSymbols(false);
 		
-		seriesCart1 = new XYChart.Series<Number, Number>();
+		seriesCart1 = new XYChart.Series<>();
 		seriesCart1.setName("Cart 1 Velocity");
-		seriesCart2 = new XYChart.Series<Number, Number>();
+		seriesCart2 = new XYChart.Series<>();
 		seriesCart2.setName("Cart 2 Velocity");
 		chrtVel.getData().addAll(seriesCart1, seriesCart2);
 		
@@ -372,7 +372,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 							NumberBinding velocityCart1 = positionCart1.subtract(previousPosCart1).divide(GRAPHING_DELAY);
 							
 							
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocityCart1.getValue().floatValue());
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(elapsedTime, velocityCart1.getValue().floatValue());
 							
 							seriesCart1.getData().add(dataPoint);
 							previousPosCart1 = positionCart1;
@@ -387,7 +387,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 							NumberBinding velocityCart2 = positionCart2.subtract(previousPosCart2).divide(GRAPHING_DELAY);
 							
 							
-							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<Number, Number>(elapsedTime, velocityCart2.getValue().floatValue());
+							XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(elapsedTime, velocityCart2.getValue().floatValue());
 							
 							seriesCart2.getData().add(dataPoint);
 							previousPosCart2 = positionCart2;
