@@ -1,5 +1,6 @@
 package pkg_EM;
 
+import java.util.LinkedList;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -20,17 +21,19 @@ import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
+import pkg_EM.IEleForce;
 
 public class ClsEle implements pkg_main.IConstants {
 	
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
-	private static List<Particle> particles;
+	private static List<Particle> particles = new LinkedList<>();
 	private static boolean hasSelected = false;
 	private static int selected = 0;
 	private static double mouseX;
 	private static double mouseY;
-	static float eleConst = 0f;
+	private static float eleConst = 0f;
+	private static EleMode mode = EleMode.DEFAULT;
 	
 	// Windows
 	private static VBox winEle;
@@ -210,7 +213,7 @@ public class ClsEle implements pkg_main.IConstants {
 		Group dispGroup = new Group();
 		winDisplay.getChildren().clear();
 		for (Particle p : particles) {
-			dispGroup.getChildren().add(p);
+			dispGroup.getChildren().add(p.getImageView());
 		}
 		winDisplay.getChildren().add(dispGroup);
 		redrawScene();
@@ -311,6 +314,7 @@ public class ClsEle implements pkg_main.IConstants {
 	
 	//User presses btnAdd.
 	public static void doBtnAdd() {
+		mode = EleMode.ADD;
 		btnAdd.setDisable(true);
 		btnSelect.setDisable(false);
 		
@@ -324,11 +328,22 @@ public class ClsEle implements pkg_main.IConstants {
 					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, 
 							Integer.parseInt(txtCharge.getText()), Float.parseFloat(txtMass.getText())));
 				}
+				btnRemove.setDisable(false);
 				updateAll();
 			}
 		});
 		
-		
+		lblHelp.setText(IEleForce.HELP_ADD);
+	}
+	
+	public static void doBtnSelect() {
+		mode = EleMode.SELECT;
+		lblHelp.setText(IEleForce.HELP_SELECT);
+	}
+	
+	public static void doBtnRemove() {
+		mode = EleMode.REMOVE;
+		lblHelp.setText(IEleForce.HELP_REMOVE);
 	}
 	
 	//Update all particles in the program.
@@ -336,5 +351,6 @@ public class ClsEle implements pkg_main.IConstants {
 		for (Particle p : particles) {
 			p.update();
 		}
+		redrawScene();
 	}
 }
