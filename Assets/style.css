@@ -40,3 +40,6 @@
     -fx-stroke: #000;
     -fx-effect: null;
 }
+
+.default-color0.chart-series-line { -fx-stroke: #000; }
+.default-color1.chart-series-line { -fx-stroke: darkgreen; }
