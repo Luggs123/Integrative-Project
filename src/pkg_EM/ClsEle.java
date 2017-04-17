@@ -21,19 +21,19 @@ import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
-import pkg_EM.IEleForce;
+import pkg_EM.IElectrostatic;
 
 public class ClsEle implements pkg_main.IConstants {
 	
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
 	private static List<Particle> particles = new LinkedList<>();
+	private static List<Particle> initialParticles = new LinkedList<>();
 	private static boolean hasSelected = false;
 	private static int selected = 0;
 	private static double mouseX;
 	private static double mouseY;
 	private static float eleConst = 0f;
-	private static EleMode mode = EleMode.DEFAULT;
 	
 	// Windows
 	private static VBox winEle;
@@ -150,17 +150,16 @@ public class ClsEle implements pkg_main.IConstants {
 		winButt.getChildren().addAll(vLabels, vFields, vButtons);
 		
 		// Setup info window.
-		if (hasSelected) {
-			selectedVelocity.setText("Velocity: " + particles.get(selected).getVelocity().getX() + 
-					", " + particles.get(selected).getVelocity().getY());
-			selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
-					", " + particles.get(selected).getAcceleration().getY());
-			selectedCharge.setText("Charge: " + particles.get(selected).getCharge());
-			selectedMass.setText("Mass: " + particles.get(selected).getMass());
-		}
+		winInfo.setPrefWidth(WINDOW_WIDTH * 0.25);
+		VBox infoContents = new VBox();
 		
-		winInfo.setPrefWidth(WINDOW_WIDTH / 2);
-		winInfo.getChildren().addAll(selectedVelocity, selectedAcceleration, selectedCharge, selectedMass);
+		HBox velBox = new HBox();
+		HBox accBox = new HBox();
+		HBox chrgBox = new HBox();
+		HBox massBox = new HBox();
+		
+		infoContents.getChildren().addAll(velBox, accBox, chrgBox, massBox);
+		winInfo.getChildren().add(infoContents);
 		
 		// Help window.
 		lblHelp = new Label();
@@ -180,8 +179,33 @@ public class ClsEle implements pkg_main.IConstants {
 	}
 	
 	// Re-paint the scene in order to update the position of objects during the animation.
-		private static void redrawScene() {
+	private static void redrawScene() {
 		HBox separator = new HBox();
+		
+		winInfo.getChildren().clear();
+		VBox infoContents = new VBox();
+		if (hasSelected) {
+			selectedVelocity.setText("Velocity: " + particles.get(selected).getVelocity().getX() * 1000 / 1 / 1000.0 + 
+					", " + particles.get(selected).getVelocity().getY() * 1000 / 1 / 1000.0);
+			selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
+					", " + particles.get(selected).getAcceleration().getY());
+			selectedCharge.setText("Charge: " + particles.get(selected).getCharge());
+			selectedMass.setText("Mass: " + particles.get(selected).getMass());
+		}
+		HBox velBox = new HBox();
+		HBox accBox = new HBox();
+		HBox chrgBox = new HBox();
+		HBox massBox = new HBox();
+		
+		velBox.getChildren().add(selectedVelocity);
+		accBox.getChildren().add(selectedAcceleration);
+		chrgBox.getChildren().add(selectedCharge);
+		massBox.getChildren().add(selectedMass);
+		
+		infoContents.setPadding(new Insets(20));
+		infoContents.getChildren().addAll(velBox, accBox, chrgBox, massBox);
+		winInfo.getChildren().add(infoContents);
+		
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
@@ -200,7 +224,12 @@ public class ClsEle implements pkg_main.IConstants {
 	
 	// User presses btnStart.
 	public static void doBtnStart() {
-		// Get the user inputed values and return if any of the inputs are invalid.
+		initialParticles = particles;
+		
+		if (particles.size() == 0) {
+			return;
+		}
+		
 		if (!txtEleConst.tryGetFloat())
 		{
 			return;
@@ -266,6 +295,8 @@ public class ClsEle implements pkg_main.IConstants {
 	// User presses btnDone.
 	public static void doBtnDone() {
 		// Clear all animation data.
+		hasSelected = false;
+		particles.clear();
 		winDisplay.getChildren().clear();
 		
 		// Enable start button and disable the animation buttons.
@@ -316,7 +347,6 @@ public class ClsEle implements pkg_main.IConstants {
 	
 	//User presses btnAdd.
 	public static void doBtnAdd() {
-		mode = EleMode.ADD;
 		btnAdd.setDisable(true);
 		btnSelect.setDisable(false);
 		
@@ -345,6 +375,13 @@ public class ClsEle implements pkg_main.IConstants {
 				
 				mouseX = event.getX();
 				mouseY = event.getY();
+				
+				boolean hasCollision = false;
+				for (Particle p : particles) {
+					if (p.getPosition().subtract(mouseX, mouseY).magnitude() < 25) {
+						hasCollision = true;
+					}
+				}
 
 				float addCharge = Float.parseFloat(txtCharge.getText());
 				float addMass = Float.parseFloat(txtMass.getText());
@@ -359,7 +396,17 @@ public class ClsEle implements pkg_main.IConstants {
 					return;
 				}
 				
-				if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2)) {
+				if (hasCollision) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Particle Placement Error!");
+					alert.setHeaderText(null);
+					alert.setContentText("The placement of the particle you specified cannot touch any other existing particle.");
+
+					alert.showAndWait();
+					return;
+				}
+				
+				if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2 || hasCollision)) {
 					particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, addCharge, addMass));
 				}
 				btnRemove.setDisable(false);
@@ -367,17 +414,31 @@ public class ClsEle implements pkg_main.IConstants {
 			}
 		});
 		
-		lblHelp.setText(IEleForce.HELP_ADD);
+		lblHelp.setText(IElectrostatic.HELP_ADD);
 	}
 	
 	public static void doBtnSelect() {
-		mode = EleMode.SELECT;
-		lblHelp.setText(IEleForce.HELP_SELECT);
+		btnSelect.setDisable(true);
+		btnAdd.setDisable(false);
+		
+		winDisplay.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				for (Particle p : particles) {
+					if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
+						hasSelected = true;
+						selected = particles.indexOf(p);
+					}
+				}
+				redrawScene();
+			}
+		});
+		lblHelp.setText(IElectrostatic.HELP_SELECT);
 	}
 	
 	public static void doBtnRemove() {
-		mode = EleMode.REMOVE;
-		lblHelp.setText(IEleForce.HELP_REMOVE);
+		lblHelp.setText(IElectrostatic.HELP_REMOVE);
 	}
 	
 	//Update all particles in the program.
