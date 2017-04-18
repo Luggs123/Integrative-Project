@@ -53,7 +53,7 @@ public class AppTextField extends TextField {
 	}
 	
 	public boolean tryGetColour() {
-		if (this.getLength() != 6 ) {
+		if (this.getLength() == 6 ) {
 			for (int i = 0; i < 6; i++) {
 				switch (this.getText().charAt(i)) {
 				case '0':

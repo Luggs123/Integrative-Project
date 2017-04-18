@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
@@ -28,6 +29,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	private static boolean isPaused;
 	private static List<Particle> particles = new LinkedList<>();
 	private static List<Particle> initialParticles = new LinkedList<>();
+	private static List<Rectangle> pixelImgs = new LinkedList<>();
 	private static boolean hasSelectedParticle = false;
 	private static boolean hasSelectedPixel = false;
 	private static int selectedParticle = 0;
@@ -90,6 +92,13 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		// Setup animation window.
 		winDisplay.setPrefWidth(WINDOW_WIDTH);
 		winDisplay.setPrefHeight(WINDOW_HEIGHT / 2);
+		
+		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
+			pixels.add(new EFieldPoint(new Point2D(i % WINDOW_WIDTH, i / WINDOW_WIDTH)));
+			pixelImgs.add(new Rectangle(i % WINDOW_WIDTH, i / WINDOW_WIDTH, 1, 1));
+			
+			winDisplay.getChildren().add(pixelImgs.get(i));
+		}
 
 		// Setup button window.
 		Label lblEleConst = new Label("Coulomb's Constant: ");
@@ -132,10 +141,10 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
 		vLabels.setAlignment(Pos.CENTER_RIGHT);
 		vLabels.setPadding(new Insets(15));
-		vLabels.getChildren().addAll(lblEleConst, lblCharge);
+		vLabels.getChildren().addAll(lblEleConst, lblMinusColour, lblPlusColour, lblCharge);
 
 		vFields.setAlignment(Pos.CENTER);
-		vFields.getChildren().addAll(txtEleConst, txtCharge);
+		vFields.getChildren().addAll(txtEleConst, txtMinusColour, txtPlusColour, txtCharge);
 
 		HBox buttonLayout1 = new HBox();
 		HBox buttonLayout2 = new HBox();
@@ -188,13 +197,19 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		VBox infoContents = new VBox();
 		if (hasSelectedParticle) {
 			selectedCharge.setText("Charge: " + particles.get(selectedParticle).getCharge());
+			selectedPotential.setText(EMP_STR);
+		} else if (hasSelectedPixel) {
+			selectedCharge.setText(EMP_STR);
+			selectedPotential.setText("Potential: " + pixels.get(selectedPixel).getPotential());
 		}
 		HBox chrgBox = new HBox();
+		HBox potBox = new HBox();
 
 		chrgBox.getChildren().add(selectedCharge);
+		potBox.getChildren().add(selectedPotential);
 
 		infoContents.setPadding(new Insets(20));
-		infoContents.getChildren().addAll(chrgBox);
+		infoContents.getChildren().addAll(chrgBox, potBox);
 		winInfo.getChildren().add(infoContents);
 
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
@@ -202,6 +217,11 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
 		Group dispGroup = new Group();
 		winDisplay.getChildren().clear();
+		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
+			pixelImgs.get(i).setFill(pixels.get(i).getColour());
+			
+			winDisplay.getChildren().add(pixelImgs.get(i));
+		}
 		for (Particle p : particles) {
 			dispGroup.getChildren().add(p.getImageView());
 		}
@@ -216,10 +236,6 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	// User presses btnStart.
 	public static void doBtnStart() {
 		initialParticles = particles;
-		
-		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
-			pixels.add(new EFieldPoint(new Point2D(i % WINDOW_WIDTH, i / WINDOW_WIDTH)));
-		}
 
 		if (particles.isEmpty()) {
 			return;
@@ -263,6 +279,9 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 			alert.showAndWait();
 			return;
 		}
+		
+		//Creates the colour gradient for this iteration of the program.
+		ColourGradient gradient = new ColourGradient(hexToColour(txtMinusColour.getText()), hexToColour(txtPlusColour.getText()));
 
 		redrawScene();
 
@@ -283,12 +302,24 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Apply all forces.
+					double minPot = 0;
+					double maxPot = 0;
 					for (EFieldPoint e : pixels) {
 						e.setPotential(0);
 						for (Particle p : particles) {
 							double dist = e.getPosition().subtract(p.getPosition()).magnitude();
 							e.setPotential(e.getPotential() + eleConst * p.getCharge() / dist);
 						}
+						
+						if (e.getPotential() < minPot) {
+							minPot = e.getPotential();
+						} else if (e.getPotential() > maxPot) {
+							maxPot = e.getPotential();
+						}
+					}
+					double diff = maxPot - minPot;
+					for (EFieldPoint e : pixels) {
+						e.setColour(gradient.getColour((e.getPotential() - minPot) / diff));
 					}
 					updateAll();
 					redrawScene();
@@ -407,6 +438,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		btnAdd.setDisable(false);
 
 		winDisplay.setOnMouseClicked((MouseEvent event) -> {
+			hasSelectedParticle = false;
 			for (Particle p : particles) {
 				if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
 					hasSelectedParticle = true;
