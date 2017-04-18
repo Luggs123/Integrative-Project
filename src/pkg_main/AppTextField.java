@@ -51,4 +51,32 @@ public class AppTextField extends TextField {
 		
 		return true;
 	}
+	
+	public boolean tryGetColour() {
+		if (this.getLength() != 6 ) {
+			for (int i = 0; i < 6; i++) {
+				switch (this.getText().charAt(i)) {
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+				case 'a':
+				case 'b':
+				case 'c':
+				case 'd':
+				case 'e':
+				case 'f': break;
+				default: return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 }
