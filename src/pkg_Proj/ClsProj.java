@@ -86,8 +86,8 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		
 		// Setup button window.
 		Label lblAng = new Label("Angle of Launch (Degrees):");
-		Label lblGrav = new Label("Gravitational Constant: ");
-		Label lblVel = new Label("Initial Velocity: ");
+		Label lblGrav = new Label("Gravitational Constant (m/s^2): ");
+		Label lblVel = new Label("Initial Velocity (m/s): ");
 		lblAng.setTextAlignment(TextAlignment.RIGHT);
 		lblGrav.setTextAlignment(TextAlignment.RIGHT);
 		lblVel.setTextAlignment(TextAlignment.RIGHT);
@@ -140,14 +140,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time (Milliseconds)");
-        yAxis.setLabel("Velocity");
+        yAxis.setLabel("Velocity (m/s)");
         
         chrtVel = new LineChart<Number, Number>(xAxis, yAxis);
         chrtVel.setAnimated(false);
         chrtVel.setCreateSymbols(false);
 		
 		seriesVel = new XYChart.Series<Number, Number>();
-		seriesVel.setName("Velocity over Time");
 		chrtVel.getData().add(seriesVel);
 		
 		winInfo.setPrefWidth(3 * WINDOW_WIDTH / 8);
@@ -178,18 +177,12 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		float initVel = 0f;
 		
 		// Get the user inputed values and return if any of the inputs are invalid.
-		if (
-				!(txtAng.tryGetInt()
-				&& txtGrav.tryGetFloat()
-				&& txtVel.tryGetFloat())
-				)
+		if (!txtAng.tryGetInt())
 		{
 			return;
 		}
 		
 		launchAngle = Integer.parseInt(txtAng.getText());
-		gravityConst = Float.parseFloat(txtGrav.getText());
-		initVel = Float.parseFloat(txtVel.getText());
 		
 		if (launchAngle < 0 || launchAngle > 90) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -201,6 +194,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			return;
 		}
 		
+		if (!txtGrav.tryGetFloat())
+		{
+			return;
+		}
+		
+		gravityConst = Float.parseFloat(txtGrav.getText());
+		
 		if (gravityConst <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Input Value Error!");
@@ -210,6 +210,13 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 			alert.showAndWait();
 			return;
 		}
+		
+		if (!txtVel.tryGetFloat())
+		{
+			return;
+		}
+		
+		initVel = Float.parseFloat(txtVel.getText());
 		
 		if (initVel <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);

@@ -79,31 +79,31 @@ public class ClsHandlers implements EventHandler<MouseEvent> {
 		}
 		
 		// Electrostatic Potential
-				else if (source == ClsFld.btnStart) {
-					ClsFld.doBtnStart();
-					
-				} else if (source == ClsFld.btnDone) {
-					ClsFld.doBtnDone();
-					
-				} else if (source == ClsFld.btnPause) {
-					ClsFld.doBtnPause();
-					
-				} else if (source == ClsFld.btnReset) {
-					ClsFld.doBtnReset();
-				
-				} else if (source == ClsFld.btnHelp) {
-					ClsFld.doBtnHelp();
-					
-				} else if (source == ClsFld.btnAdd) {
-					ClsFld.doBtnAdd();
-					
-				} else if (source == ClsFld.btnSelect) {
-					ClsFld.doBtnSelect();
-					
-				} else if (source == ClsFld.btnRemove) {
-					ClsFld.doBtnRemove();
-					
-				}
+		else if (source == ClsFld.btnStart) {
+			ClsFld.doBtnStart();
+			
+		} else if (source == ClsFld.btnDone) {
+			ClsFld.doBtnDone();
+			
+		} else if (source == ClsFld.btnPause) {
+			ClsFld.doBtnPause();
+			
+		} else if (source == ClsFld.btnReset) {
+			ClsFld.doBtnReset();
+		
+		} else if (source == ClsFld.btnHelp) {
+			ClsFld.doBtnHelp();
+			
+		} else if (source == ClsFld.btnAdd) {
+			ClsFld.doBtnAdd();
+			
+		} else if (source == ClsFld.btnSelect) {
+			ClsFld.doBtnSelect();
+			
+		} else if (source == ClsFld.btnRemove) {
+			ClsFld.doBtnRemove();
+			
+		}
 	}
 }
 

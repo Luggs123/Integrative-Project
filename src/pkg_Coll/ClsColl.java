@@ -96,9 +96,9 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		winDisplay.setPrefHeight(WINDOW_HEIGHT / 2);
 		
 		// Setup button window.
-		Label lblM1 = new Label("Mass of Cart 1: ");
-		Label lblM2 = new Label("Mass of Cart 2: ");
-		Label lblVel = new Label("Initial Velocity: ");
+		Label lblM1 = new Label("Mass of Cart 1 (kg): ");
+		Label lblM2 = new Label("Mass of Cart 2 (kg): ");
+		Label lblVel = new Label("Initial Velocity (m/s): ");
 		lblM1.setTextAlignment(TextAlignment.RIGHT);
 		lblM2.setTextAlignment(TextAlignment.RIGHT);
 		lblVel.setTextAlignment(TextAlignment.RIGHT);
@@ -161,16 +161,14 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time (Milliseconds)");
-        yAxis.setLabel("Velocity");
+        yAxis.setLabel("Velocity (m/s)");
         
         chrtVel = new LineChart<>(xAxis, yAxis);
         chrtVel.setAnimated(false);
         chrtVel.setCreateSymbols(false);
 		
 		seriesCart1 = new XYChart.Series<>();
-		seriesCart1.setName("Cart 1 Velocity");
 		seriesCart2 = new XYChart.Series<>();
-		seriesCart2.setName("Cart 2 Velocity");
 		chrtVel.getData().addAll(seriesCart1, seriesCart2);
 		
 		winInfo.setPrefWidth(3 * WINDOW_WIDTH / 8);
@@ -201,18 +199,11 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		float initVel = 0f;
 		
 		// Get the user inputed values and return if any of the inputs are invalid.
-		if (
-				!(txtM1.tryGetFloat()
-				&& txtM2.tryGetFloat()
-				&& txtVel.tryGetFloat())
-				)
-		{
+		if (!txtM1.tryGetFloat()) {
 			return;
 		}
 		
 		massCart1 = Float.parseFloat(txtM1.getText());
-		massCart2 = Float.parseFloat(txtM2.getText());
-		initVel = Float.parseFloat(txtVel.getText());
 		
 		if (massCart1 <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -224,6 +215,12 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 			return;
 		}
 		
+		if (!txtM2.tryGetFloat()) {
+			return;
+		}
+		
+		massCart2 = Float.parseFloat(txtM2.getText());
+		
 		if (massCart2 <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Input Value Error!");
@@ -233,6 +230,12 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 			alert.showAndWait();
 			return;
 		}
+		
+		if (!txtVel.tryGetFloat()) {
+			return;
+		
+		}
+		initVel = Float.parseFloat(txtVel.getText());
 		
 		if (initVel <= 0) {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -439,8 +442,9 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(null);
 		alert.setHeaderText(null);
-		alert.setContentText("This animation will launch a cannon ball at a specified angle and velocity."
-				+ NEWLINE + NEWLINE + "The user may also select the gravitational constant to affect the magnitude of the ball's downward acceleration.");
+		alert.setContentText("This animation demonstrates the transfer of momentum between two carts undergoing elastic and inelastic collision."
+				+ NEWLINE + NEWLINE + "The elastic collision will cause cart 1's momentum to be transferred to cart 2."
+				+ NEWLINE + NEWLINE + "The inelastic collision will cause cart 1 to chain to cart 2, with both their masses now affecting velocity.");
 
 		alert.showAndWait();
 	}

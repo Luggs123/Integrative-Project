@@ -142,10 +142,10 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
 		vLabels.setAlignment(Pos.CENTER_RIGHT);
 		vLabels.setPadding(new Insets(15));
-		vLabels.getChildren().addAll(lblEleConst, lblMinusColour, lblPlusColour, lblCharge);
+		vLabels.getChildren().addAll(lblEleConst, lblCharge);
 
 		vFields.setAlignment(Pos.CENTER);
-		vFields.getChildren().addAll(txtEleConst, txtMinusColour, txtPlusColour, txtCharge);
+		vFields.getChildren().addAll(txtEleConst, txtCharge);
 
 		HBox buttonLayout1 = new HBox();
 		HBox buttonLayout2 = new HBox();
@@ -381,8 +381,8 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(null);
 		alert.setHeaderText(null);
-		alert.setContentText("This animation will display the interaction of many charged particles undergoing electrostatic force." 
-				+ NEWLINE + NEWLINE +  "The user may also select Coulomb's Constant to magnify the aforementioned forces.");
+		alert.setContentText("This animation will display the potential of any point in space as a result of point charges." 
+				+ NEWLINE + NEWLINE +  "The user may also select Coulomb's Constant to alter the magnitude of the potential.");
 
 		alert.showAndWait();
 	}
