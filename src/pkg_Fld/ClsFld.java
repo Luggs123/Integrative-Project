@@ -1,4 +1,4 @@
-package pkg_Ele;
+package pkg_Fld;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,18 +20,22 @@ import javafx.scene.text.TextAlignment;
 import pkg_main.AppButton;
 import pkg_main.AppTextField;
 import pkg_main.ClsMain;
+import pkg_Ele.*;
 
-public class ClsEle implements pkg_main.IConstants, IElectrostatic {
+public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
 	private static List<Particle> particles = new LinkedList<>();
 	private static List<Particle> initialParticles = new LinkedList<>();
-	private static boolean hasSelected = false;
-	private static int selected = 0;
+	private static boolean hasSelectedParticle = false;
+	private static boolean hasSelectedPixel = false;
+	private static int selectedParticle = 0;
+	private static int selectedPixel = 0;
 	private static double mouseX;
 	private static double mouseY;
 	private static float eleConst = 0f;
+	private static List<EFieldPoint> pixels = new LinkedList<>();
 	
 	// Windows
 	private static VBox winEle;
@@ -53,7 +57,6 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	// Text Fields
 	private static AppTextField txtEleConst;
 	private static AppTextField txtCharge;
-	private static AppTextField txtMass;
 	
 	// Labels
 	private static Label lblHelp;
@@ -62,7 +65,6 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	private static Label selectedVelocity = new Label();
 	private static Label selectedAcceleration = new Label();
 	private static Label selectedCharge = new Label();
-	private static Label selectedMass = new Label();
 	
 	// Charge image.
 	static Image chargeImg = new Image(ClsMain.resourceLoader("EleForce/Charge.png"));
@@ -91,17 +93,13 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		// Setup button window.
 		Label lblEleConst = new Label("Coulomb's Constant: ");
 		Label lblCharge = new Label("Particle Charge: ");
-		Label lblMass = new Label("Mass: ");
 		lblEleConst.setTextAlignment(TextAlignment.RIGHT);
 		lblCharge.setTextAlignment(TextAlignment.RIGHT);
-		lblMass.setTextAlignment(TextAlignment.RIGHT);
 		lblEleConst.setTextFill(Color.WHITE);
 		lblCharge.setTextFill(Color.WHITE);
-		lblMass.setTextFill(Color.WHITE);
 		
 		txtEleConst = new AppTextField("Coulomb's Constant");
 		txtCharge = new AppTextField("Particle Charge");
-		txtMass = new AppTextField("Mass");
 		
 		btnStart = new AppButton("Start");
 		btnDone = new AppButton("Done");
@@ -125,10 +123,10 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		
 		vLabels.setAlignment(Pos.CENTER_RIGHT);
 		vLabels.setPadding(new Insets(15));
-		vLabels.getChildren().addAll(lblEleConst, lblCharge, lblMass);
+		vLabels.getChildren().addAll(lblEleConst, lblCharge);
 		
 		vFields.setAlignment(Pos.CENTER);
-		vFields.getChildren().addAll(txtEleConst, txtCharge, txtMass);
+		vFields.getChildren().addAll(txtEleConst, txtCharge);
 		
 		HBox buttonLayout1 = new HBox();
 		HBox buttonLayout2 = new HBox();
@@ -151,12 +149,9 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		winInfo.setPrefWidth(WINDOW_WIDTH * 0.25);
 		VBox infoContents = new VBox();
 		
-		HBox velBox = new HBox();
-		HBox accBox = new HBox();
 		HBox chrgBox = new HBox();
-		HBox massBox = new HBox();
 		
-		infoContents.getChildren().addAll(velBox, accBox, chrgBox, massBox);
+		infoContents.getChildren().addAll(chrgBox);
 		winInfo.getChildren().add(infoContents);
 		
 		// Help window.
@@ -182,26 +177,15 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		
 		winInfo.getChildren().clear();
 		VBox infoContents = new VBox();
-		if (hasSelected) {
-			selectedVelocity.setText("Velocity: " + particles.get(selected).getVelocity().getX() * 1000 / 1 / 1000.0 + 
-					", " + particles.get(selected).getVelocity().getY() * 1000 / 1 / 1000.0);
-			selectedAcceleration.setText("Acceleration: " + particles.get(selected).getAcceleration().getX() + 
-					", " + particles.get(selected).getAcceleration().getY());
-			selectedCharge.setText("Charge: " + particles.get(selected).getCharge());
-			selectedMass.setText("Mass: " + particles.get(selected).getMass());
+		if (hasSelectedParticle) {
+			selectedCharge.setText("Charge: " + particles.get(selectedParticle).getCharge());
 		}
-		HBox velBox = new HBox();
-		HBox accBox = new HBox();
 		HBox chrgBox = new HBox();
-		HBox massBox = new HBox();
 		
-		velBox.getChildren().add(selectedVelocity);
-		accBox.getChildren().add(selectedAcceleration);
 		chrgBox.getChildren().add(selectedCharge);
-		massBox.getChildren().add(selectedMass);
 		
 		infoContents.setPadding(new Insets(20));
-		infoContents.getChildren().addAll(velBox, accBox, chrgBox, massBox);
+		infoContents.getChildren().addAll(chrgBox);
 		winInfo.getChildren().add(infoContents);
 		
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
@@ -223,6 +207,10 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	// User presses btnStart.
 	public static void doBtnStart() {
 		initialParticles = particles;
+		
+		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
+			pixels.add(new EFieldPoint(new Point2D(i % WINDOW_WIDTH, i / WINDOW_WIDTH)));
+		}
 		
 		if (particles.isEmpty()) {
 			return;
@@ -264,12 +252,12 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Apply all forces.
-					for (Particle p : particles) {
-						p.setAcceleration(Point2D.ZERO);
-						for (Particle r : particles) {
-							p.applyForce(p.attract(r).multiply(eleConst));
+					for (EFieldPoint e : pixels) {
+						e.setPotential(0);
+						for (Particle p : particles) {
+							double dist = e.getPosition().subtract(p.getPosition()).magnitude();
+							e.setPotential(e.getPotential() + eleConst * p.getCharge() / dist);
 						}
-						p.move();
 					}
 					updateAll();
 					redrawScene();
@@ -283,7 +271,7 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	// User presses btnDone.
 	public static void doBtnDone() {
 		// Clear all animation data.
-		hasSelected = false;
+		hasSelectedParticle = false;
 		particles.clear();
 		winDisplay.getChildren().clear();
 		
@@ -350,16 +338,6 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
                         return;
                     }
                     
-                    if (!txtMass.tryGetFloat() || Float.parseFloat(txtMass.getText()) < 0) {
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("Input Value Error!");
-                        alert.setHeaderText(null);
-                        alert.setContentText("The value inputed for the Particle Mass must be a number.");
-                        
-                        alert.showAndWait();
-                        return;
-                    }
-                    
                     mouseX = event.getX();
                     mouseY = event.getY();
                     
@@ -371,17 +349,6 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
                     }
                     
                     float addCharge = Float.parseFloat(txtCharge.getText());
-                    float addMass = Float.parseFloat(txtMass.getText());
-                    
-                    if (!txtMass.tryGetFloat() || addMass < 0) {
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.setTitle("Input Value Error!");
-                        alert.setHeaderText(null);
-                        alert.setContentText("The value inputed for the Particle Mass must be a number greater than 0.");
-                        
-                        alert.showAndWait();
-                        return;
-                    }
                     
                     if (hasCollision) {
                         Alert alert = new Alert(AlertType.ERROR);
@@ -394,7 +361,7 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
                     }
                     
                     if (!(mouseX < 0 || mouseX > WINDOW_WIDTH || mouseY < 0 || mouseY > WINDOW_HEIGHT / 2 || hasCollision)) {
-                        particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, addCharge, addMass));
+                        particles.add(new Particle(new Point2D(mouseX, mouseY), chargeImg, addCharge, 0));
                     }
                     btnRemove.setDisable(false);
                     updateAll();
@@ -408,14 +375,20 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		btnAdd.setDisable(false);
 		
 		winDisplay.setOnMouseClicked((MouseEvent event) -> {
-                    for (Particle p : particles) {
-                        if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
-                            hasSelected = true;
-                            selected = particles.indexOf(p);
-                        }
-                    }
-                    redrawScene();
-                });
+			for (Particle p : particles) {
+				if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
+					hasSelectedParticle = true;
+					selectedParticle = particles.indexOf(p);
+				}
+            }
+                    
+            if (!hasSelectedParticle) {
+            	selectedPixel = (int) (event.getX() + WINDOW_WIDTH * event.getY());
+                hasSelectedPixel = true;
+            }
+                    
+            redrawScene();
+        });
 		lblHelp.setText(IElectrostatic.HELP_SELECT);
 	}
 	
@@ -428,8 +401,8 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
             for (Particle p : particles) {
                 if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
                     int index = particles.indexOf(p);
-                    if (index == selected) {
-                    	hasSelected = false;
+                    if (index == selectedParticle) {
+                    	hasSelectedParticle = false;
                     }
                     particles.remove(index);
                 }

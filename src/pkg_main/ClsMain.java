@@ -42,6 +42,7 @@ public class ClsMain extends Application implements IConstants {
 	
 	public static Menu menuEM = new Menu("Electricity & Magnetism");
 	public static AppMenuItem menuEle = new AppMenuItem("Electrostatic Force");
+	public static AppMenuItem menuFld = new AppMenuItem("Electrostatic Potential");
 	public static AppMenuItem menuEMWIP = new AppMenuItem("In Construction");
 	
 	public static Menu menuProg = new Menu("Help");
@@ -75,7 +76,7 @@ public class ClsMain extends Application implements IConstants {
 		// Add the menu components to the main window.
 		menuMech.getItems().addAll(menuProj, menuColl, menuMechWIP);
 		menuWav.getItems().addAll(menuStr, menuOsci, menuWavWIP);
-		menuEM.getItems().addAll(menuEle, menuEMWIP);
+		menuEM.getItems().addAll(menuEle, menuFld, menuEMWIP);
 		menuProg.getItems().addAll(menuCred, menuExit);
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 		

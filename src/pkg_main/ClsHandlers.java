@@ -8,6 +8,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import pkg_Coll.ClsColl;
 import pkg_Ele.ClsEle;
+import pkg_Fld.ClsFld;
 import pkg_Proj.ClsProj;
 
 // Button Handlers
@@ -76,6 +77,33 @@ public class ClsHandlers implements EventHandler<MouseEvent> {
 			ClsEle.doBtnRemove();
 			
 		}
+		
+		// Electrostatic Potential
+				else if (source == ClsFld.btnStart) {
+					ClsFld.doBtnStart();
+					
+				} else if (source == ClsFld.btnDone) {
+					ClsFld.doBtnDone();
+					
+				} else if (source == ClsFld.btnPause) {
+					ClsFld.doBtnPause();
+					
+				} else if (source == ClsFld.btnReset) {
+					ClsFld.doBtnReset();
+				
+				} else if (source == ClsFld.btnHelp) {
+					ClsFld.doBtnHelp();
+					
+				} else if (source == ClsFld.btnAdd) {
+					ClsFld.doBtnAdd();
+					
+				} else if (source == ClsFld.btnSelect) {
+					ClsFld.doBtnSelect();
+					
+				} else if (source == ClsFld.btnRemove) {
+					ClsFld.doBtnRemove();
+					
+				}
 	}
 }
 
@@ -96,6 +124,9 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 		// Electricity.
 		} else if (source == ClsMain.menuEle) {
 			ClsMain.updatePane(ClsEle.drawScene());
+			
+		} else if (source == ClsMain.menuFld) {
+			ClsMain.updatePane(ClsFld.drawScene());
 		
 		// Other
 		} else if (source == ClsMain.menuStr) {
