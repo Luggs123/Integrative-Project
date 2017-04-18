@@ -23,6 +23,7 @@ import pkg_main.ClsMain;
 
 public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 
+	// Animation Properties
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
 	private static List<Particle> particles = new LinkedList<>();
@@ -344,6 +345,7 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	public static void doBtnAdd() {
 		btnAdd.setDisable(true);
 		btnSelect.setDisable(false);
+		btnRemove.setDisable(false);
 
 		winDisplay.setOnMouseClicked((MouseEvent event) -> {
 			// Check for input errors.
@@ -407,6 +409,7 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	public static void doBtnSelect() {
 		btnSelect.setDisable(true);
 		btnAdd.setDisable(false);
+		btnRemove.setDisable(false);
 
 		winDisplay.setOnMouseClicked((MouseEvent event) -> {
 			for (Particle p : particles) {

@@ -27,7 +27,7 @@
 }
 
 .win-display {
-    -fx-background-color: linear-gradient(#fff, rgb(128, 128, 128));
+    -fx-background-color: linear-gradient(#fff, rgb(108, 108, 108));
 }
 
 .win-butt {
@@ -36,17 +36,53 @@
 
 .win-help {
     -fx-border-width: 1px 0px 0px 0px;
-    -fx-background-color: rgb(0, 117, 192);
+    -fx-background-color: linear-gradient(rgb(0, 119, 199), rgb(0, 114, 190));
 }
 
 /* Line Charts */
+.chart {
+    -fx-padding: 10px;
+    -fx-background-color: #212121;
+    -fx-legend-visible: false;
+}
+
+.chart-content {
+    -fx-padding: 30px;    
+}
+
+.chart-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 1.6em;
+}
+
+.axis-label {
+    -fx-text-fill: #ffffff;
+}
+
+.chart-plot-background {
+    -fx-background-color:transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke:#505050;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #505050;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill:transparent;
+    -fx-stroke: transparent;
+}
+
 .chart-series-line {    
     -fx-stroke-width: 2px;
-    -fx-stroke: #000;
+    -fx-stroke: #fff;
     -fx-effect: null;
 }
 
-.default-color0.chart-series-line { -fx-stroke: #000; }
+.default-color0.chart-series-line { -fx-stroke: #fff; }
 .default-color1.chart-series-line { -fx-stroke: darkgreen; }
 
 /* Labels */
@@ -63,7 +99,7 @@
     -fx-text-fill: linear-gradient(white, #d0d0d0);
 }
 
-.button:focused, .button:hover {
+.button:hover {
     -fx-background-color:
         rgba(255, 255, 255, 0.08),
         rgba(0, 0, 0, 0.8),

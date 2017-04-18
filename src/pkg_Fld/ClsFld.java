@@ -25,11 +25,12 @@ import pkg_Ele.*;
 
 public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
+	// Animation Properties
 	public static AnimationTimer mainLoop;
 	private static boolean isPaused;
 	private static List<Particle> particles = new LinkedList<>();
 	private static List<Particle> initialParticles = new LinkedList<>();
-	private static List<Rectangle> pixelImgs = new LinkedList<>();
+//	private static List<Rectangle> pixelImgs = new LinkedList<>();
 	private static boolean hasSelectedParticle = false;
 	private static boolean hasSelectedPixel = false;
 	private static int selectedParticle = 0;
@@ -40,7 +41,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	private static List<EFieldPoint> pixels = new LinkedList<>();
 
 	// Windows
-	private static VBox winEle;
+	private static VBox winFld;
 	private static Pane winDisplay;
 	private static HBox winButt;
 	private static HBox winInfo;
@@ -75,7 +76,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	public static Pane drawScene() {
 
 		// Main VBox.
-		winEle = new VBox();
+		winFld = new VBox();
 
 		// Sub Windows
 		winDisplay = new Pane();
@@ -95,9 +96,9 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		
 		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
 			pixels.add(new EFieldPoint(new Point2D(i % WINDOW_WIDTH, i / WINDOW_WIDTH)));
-			pixelImgs.add(new Rectangle(i % WINDOW_WIDTH, i / WINDOW_WIDTH, 1, 1));
-			
-			winDisplay.getChildren().add(pixelImgs.get(i));
+//			pixelImgs.add(new Rectangle(i % WINDOW_WIDTH, i / WINDOW_WIDTH, 1, 1));
+//			
+//			winDisplay.getChildren().add(pixelImgs.get(i));
 		}
 
 		// Setup button window.
@@ -182,11 +183,11 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 
-		winEle.getChildren().addAll(winDisplay, separator, winHelp);
+		winFld.getChildren().addAll(winDisplay, separator, winHelp);
 
 		isPaused = true;
 
-		return winEle;
+		return winFld;
 	}
 
 	// Re-paint the scene in order to update the position of objects during the animation.
@@ -217,20 +218,22 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
 		Group dispGroup = new Group();
 		winDisplay.getChildren().clear();
-		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
-			pixelImgs.get(i).setFill(pixels.get(i).getColour());
-			
-			winDisplay.getChildren().add(pixelImgs.get(i));
-		}
+//		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
+//			pixelImgs.get(i).setFill(pixels.get(i).getColour());
+//			
+//			winDisplay.getChildren().add(pixelImgs.get(i));
+//		}
+		
 		for (Particle p : particles) {
 			dispGroup.getChildren().add(p.getImageView());
 		}
+		
 		winDisplay.getChildren().add(dispGroup);
 
-		winEle.getChildren().clear();
-		winEle.getChildren().addAll(winDisplay, separator, winHelp);
+		winFld.getChildren().clear();
+		winFld.getChildren().addAll(winDisplay, separator, winHelp);
 
-		ClsMain.updatePane(winEle);
+		ClsMain.updatePane(winFld);
 	}
 
 	// User presses btnStart.
@@ -273,7 +276,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Colour Hex Error!");
 			alert.setHeaderText(null);
-			alert.setContentText("The specified hex colour for hgih potentials is an invalid hex value." + 
+			alert.setContentText("The specified hex colour for high potentials is an invalid hex value." + 
 					NEWLINE + "Use only numbers and lowercase letters.");
 
 			alert.showAndWait();
@@ -388,6 +391,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	public static void doBtnAdd() {
 		btnAdd.setDisable(true);
 		btnSelect.setDisable(false);
+		btnRemove.setDisable(false);
 
 		winDisplay.setOnMouseClicked((MouseEvent event) -> {
 			if (!txtCharge.tryGetFloat()) {
@@ -436,6 +440,7 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	public static void doBtnSelect() {
 		btnSelect.setDisable(true);
 		btnAdd.setDisable(false);
+		btnRemove.setDisable(false);
 
 		winDisplay.setOnMouseClicked((MouseEvent event) -> {
 			hasSelectedParticle = false;

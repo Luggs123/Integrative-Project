@@ -160,6 +160,9 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		// Setup info window.
 		final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Time (Milliseconds)");
+        yAxis.setLabel("Velocity");
+        
         chrtVel = new LineChart<>(xAxis, yAxis);
         chrtVel.setAnimated(false);
         chrtVel.setCreateSymbols(false);
@@ -251,12 +254,12 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		Image ballImg = new Image(ClsMain.resourceLoader("Collisions/Cart.png"));
 		
 		cart1 = new Cart(initialPos, initialVel, ballImg, massCart1);
-		cart1.setPosition(cart1.getPosition().subtract(0, cart1.getImageView().getFitHeight()));
+		cart1.setPosition(cart1.getPosition().subtract(0, cart1.getImageView().getFitHeight() * 0.75));
 		cart1.update();
 		
 		cart2 = new Cart(initialPos, Point2D.ZERO, ballImg, massCart2);
 		cart2.setVelocity(new Point2D((initVel * cart1.getMass()) / cart2.getMass(), 0));
-		cart2.setPosition(cart2.getPosition().subtract(-WINDOW_WIDTH / 2, cart2.getImageView().getFitHeight()));
+		cart2.setPosition(cart2.getPosition().subtract(-WINDOW_WIDTH / 2, cart2.getImageView().getFitHeight() * 0.75));
 		cart2.update();
 		
 		// Initialize graph data.

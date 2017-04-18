@@ -139,6 +139,9 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		// Setup info window.
 		final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Time (Milliseconds)");
+        yAxis.setLabel("Velocity");
+        
         chrtVel = new LineChart<Number, Number>(xAxis, yAxis);
         chrtVel.setAnimated(false);
         chrtVel.setCreateSymbols(false);
