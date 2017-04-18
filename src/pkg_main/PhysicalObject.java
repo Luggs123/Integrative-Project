@@ -127,9 +127,6 @@ public abstract class PhysicalObject extends Circle {
 		
 		// Change location depending on velocity.
 		this.setPosition(this.getPosition().add(velocity));
-
-		// Clear the acceleration.
-		this.setAcceleration(Point2D.ZERO);
 	}
 	
 	/**

@@ -247,16 +247,6 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 		}
 		
 		redrawScene();
-
-		for (Particle p : particles) {
-			p.setAcceleration(Point2D.ZERO);
-			for (Particle r : particles) {
-				double distMag = p.getPosition().distance(r.getPosition());
-				Point2D distDir = new Point2D((p.getPosition().getX() - r.getPosition().getX()), 
-						(p.getPosition().getY() - r.getPosition().getY())).normalize();
-				p.setAcceleration(p.getAcceleration().add(distDir.multiply(eleConst * p.getCharge() * r.getCharge() / (distMag * distMag))));
-			}
-		}
 		
 		// Disable start button and enable the rest.
 		btnStart.setDisable(true);
@@ -328,6 +318,7 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	// User presses btnReset.
 	public static void doBtnReset() {
 		doBtnDone();
+		particles = initialParticles;
 		doBtnStart();
 		lblHelp.setText(HELP_RESET);
 	}
@@ -430,6 +421,22 @@ public class ClsEle implements pkg_main.IConstants, IElectrostatic {
 	}
 	
 	public static void doBtnRemove() {
+		btnRemove.setDisable(true);
+		btnAdd.setDisable(false);
+		btnSelect.setDisable(false);
+		
+		winDisplay.setOnMouseClicked((MouseEvent event) -> {
+            for (Particle p : particles) {
+                if (p.getPosition().subtract(event.getX(), event.getY()).magnitude() < 25) {
+                    int index = particles.indexOf(p);
+                    if (index == selected) {
+                    	hasSelected = false;
+                    }
+                    particles.remove(index);
+                }
+            }
+            redrawScene();
+        });
 		lblHelp.setText(IElectrostatic.HELP_REMOVE);
 	}
 	

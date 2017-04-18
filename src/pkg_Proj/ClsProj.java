@@ -278,6 +278,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						cannonBall.applyForce(acceleration);
 						cannonBall.getImageView().setRotate(cannonBall.getImageView().getRotate() + cannonBall.getVelocity().getX() * 10);
 						cannonBall.move();
+						cannonBall.setAcceleration(Point2D.ZERO);
 						cannonBall.update();
 						
 						// Graph the current data.
