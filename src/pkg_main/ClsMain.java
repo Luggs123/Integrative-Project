@@ -63,7 +63,6 @@ public class ClsMain extends Application implements IConstants {
 		mainMenu.getMenus().addAll(menuMech, menuWav, menuEM, menuProg);
 		
 		winMain.getChildren().addAll(mainMenu, lblGreeting);
-		
 		winMain.setPrefWidth(800);
 
 		// Title the window and display it to the user.

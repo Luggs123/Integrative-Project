@@ -171,18 +171,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		return winProj;
 	}
 	
-	// Re-paint the scene in order to update the position of objects during the animation.
-	private static void redrawScene() {
-		HBox separator = new HBox();
-		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
-		separator.getChildren().addAll(winButt, winInfo);
-		
-		winProj.getChildren().clear();
-		winProj.getChildren().addAll(winDisplay, separator, winHelp);
-		
-		ClsMain.updatePane(winProj);
-	}
-	
 	// User presses btnStart.
 	public static void doBtnStart() {
 		int launchAngle = 0;
@@ -253,7 +241,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		Group dispGroup = new Group(cannonBall.getImageView());
 		winDisplay.getChildren().clear();
 		winDisplay.getChildren().add(dispGroup);
-		redrawScene();
 		
 		// Get acceleration vector.
 		Point2D acceleration = new Point2D(0, gravityConst);
@@ -295,7 +282,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 						cannonBall.getImageView().setRotate(cannonBall.getImageView().getRotate() + cannonBall.getVelocity().getX() * 10);
 						cannonBall.move();
 						cannonBall.update();
-						redrawScene();
 						
 						// Graph the current data.
 						elapsedTime = System.currentTimeMillis() - initialTime;

@@ -38,7 +38,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	private static long pauseTime;
 	
 	// Windows
-	private static VBox winProj;
+	private static VBox winColl;
 	private static Pane winDisplay;
 	private static HBox winButt;
 	private static HBox winInfo;
@@ -77,7 +77,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 	public static Pane drawScene() {
 		
 		// Main VBox.
-		winProj = new VBox();
+		winColl = new VBox();
 		
 		// Sub Windows
 		winDisplay = new Pane();
@@ -184,23 +184,11 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
 		separator.getChildren().addAll(winButt, winInfo);
 		
-		winProj.getChildren().addAll(winDisplay, separator, winHelp);
+		winColl.getChildren().addAll(winDisplay, separator, winHelp);
 		
 		isPaused = true;
 		
-		return winProj;
-	}
-	
-	// Re-paint the scene in order to update the position of objects during the animation.
-	private static void redrawScene() {
-		HBox separator = new HBox();
-		separator.setPrefHeight(7 * WINDOW_HEIGHT / 16);
-		separator.getChildren().addAll(winButt, winInfo);
-		
-		winProj.getChildren().clear();
-		winProj.getChildren().addAll(winDisplay, separator, winHelp);
-		
-		ClsMain.updatePane(winProj);
+		return winColl;
 	}
 	
 	// User presses btnStart.
@@ -280,7 +268,6 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 		Group dispGroup = new Group(cart1.getImageView(), cart2.getImageView());
 		winDisplay.getChildren().clear();
 		winDisplay.getChildren().add(dispGroup);
-		redrawScene();
 		
 		// Disable start button and enable the rest.
 		btnStart.setDisable(true);
