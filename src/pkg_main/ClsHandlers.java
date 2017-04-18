@@ -108,7 +108,7 @@ class ClsMenuHandler implements EventHandler<ActionEvent> {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Integrative Project");
 			alert.setHeaderText(null);
-			alert.setContentText("Created by Michael Luger & Mark Jarjour.");
+			alert.setContentText("Created by Paul Gaudnik, Mark Jarjour & Michael Luger");
 
 			alert.showAndWait();
 			

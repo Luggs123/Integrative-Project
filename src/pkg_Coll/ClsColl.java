@@ -363,9 +363,7 @@ public class ClsColl implements ICollisions, pkg_main.IConstants {
 							
 							seriesCart1.getData().add(dataPoint);
 							previousPosCart1 = positionCart1;
-						}
-						
-						if (cart2.isMoving()) {
+						} else if (cart2.isMoving()) {
 							timeUntilGraph += GRAPHING_DELAY;
 							// Get the instantaneous velocity.
 							FloatProperty positionCart2 = new SimpleFloatProperty();

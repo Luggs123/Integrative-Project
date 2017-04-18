@@ -98,9 +98,6 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		txtAng = new AppTextField("Angle of Launch");
 		txtGrav = new AppTextField("Gravitational Constant");
 		txtVel = new AppTextField("Initial Velocity");
-		txtAng.setText("45");
-		txtGrav.setText("0.03");
-		txtVel.setText("5");
 		
 		btnStart = new AppButton("Start");
 		btnDone = new AppButton("Done");

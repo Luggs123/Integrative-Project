@@ -3,10 +3,6 @@
     -fx-background-color: #b5b5b5;
 }
 
-/*.menu:showing {
-    -fx-background-color: #0000ff;
-}*/
-
 .menu-item:focused {
      -fx-background-color: darkgray;
 }
@@ -16,12 +12,22 @@
 }
 
 /* Animation Windows */
+.win-menu {
+    -fx-background-color: rgb(148, 148, 148);
+}
+
+.lbl-greeting {
+    -fx-font-family: "Courier New";
+    -fx-text-fill: #fff;
+    -fx-font-size: 16pt;
+}
+
 .win-display, .win-butt, .win-info, .win-help {
     -fx-border-color: #000;
 }
 
 .win-display {
-    -fx-background-color: rgb(128, 128, 128);
+    -fx-background-color: linear-gradient(#fff, rgb(128, 128, 128));
 }
 
 .win-butt {
@@ -42,3 +48,51 @@
 
 .default-color0.chart-series-line { -fx-stroke: #000; }
 .default-color1.chart-series-line { -fx-stroke: darkgreen; }
+
+/* Labels */
+
+
+/* Buttons */
+.button {
+    -fx-background-color: rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.8),#090a0c,
+        linear-gradient(#4a5661 0%, #1f2429 20%, #1f242a 100%), linear-gradient(#242a2e,    #23282e),
+        radial-gradient(center 50% 0%, radius 100%, rgba(135,142,148,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 7, 6, 5, 4, 3, 5;
+    -fx-font-family: "Arial";
+    -fx-font-size: 12;
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+}
+
+.button:focused, .button:hover {
+    -fx-background-color:
+        rgba(255, 255, 255, 0.08),
+        rgba(0, 0, 0, 0.8),
+        #090a0c,
+        linear-gradient(#4a5661 0%, #1f2429 20%, #1f242a 100%),
+        linear-gradient(#3f4950, #23282e),
+        radial-gradient(center 50% 0%, radius 100%, rgba(135,142,148,0.9),
+        rgba(255,255,255,0));
+}
+
+/* Text Fields */
+.text-field:focused, .text-area:focused {
+    -fx-background-color:
+        rgb(235, 235, 235),
+        rgb(0, 0, 0),
+        rgb(255, 255, 255);
+}
+
+.text-field, .text-area {
+    -fx-font-size: 12;
+    -fx-background-color: rgba(255, 255, 255, 0.3), linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8) 50%), rgb(218, 226, 224);
+    -fx-background-insets: 0 0 -1 0, 0, 1.5;
+    -fx-background-radius: 6, 5, 4;
+    -fx-padding: 6 10 4 10;
+    -fx-effect: innershadow( gaussian, rgba(0, 0, 0, 0.8), 5, 0, 0, 2 );
+    -fx-font-family: "Arial";
+}
+
+/* Radio Buttons */
+.radio-button {
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+}
