@@ -358,7 +358,7 @@ public class ClsProj implements IProjectile, pkg_main.IConstants {
 		lblHelp.setHelpText(HELP_RESET);
 	}
 	
-	// User presses btnReset.
+	// User presses btnHelp.
 	public static void doBtnHelp() {
 		// Displays an information alert.
 		Alert alert = new Alert(AlertType.INFORMATION);
