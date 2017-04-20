@@ -3,7 +3,6 @@ package pkg_Ele;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import pkg_main.PhysicalObject;
-import backend.Settings;
 
 public class Particle extends PhysicalObject {
 	private boolean selected;
@@ -34,7 +33,7 @@ public class Particle extends PhysicalObject {
 		double distance = force.magnitude();
 		
 		// Constrain movement.
-		distance = constrain(distance, Settings.ATTRACTION_DISTANCE_MIN, Settings.ATTRACTION_DISTANCE_MAX);
+		distance = constrain(distance, 25, 300);
 		
 		force = force.normalize();
 
