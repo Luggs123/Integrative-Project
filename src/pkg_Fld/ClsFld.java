@@ -30,7 +30,6 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 	private static boolean isPaused;
 	private static List<Particle> particles = new LinkedList<>();
 	private static List<Particle> initialParticles = new LinkedList<>();
-//	private static List<Rectangle> pixelImgs = new LinkedList<>();
 	private static boolean hasSelectedParticle = false;
 	private static boolean hasSelectedPixel = false;
 	private static int selectedParticle = 0;
@@ -59,8 +58,6 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
 	// Text Fields
 	private static AppTextField txtEleConst;
-	private static AppTextField txtMinusColour;
-	private static AppTextField txtPlusColour;
 	private static AppTextField txtCharge;
 
 	// Labels
@@ -96,28 +93,17 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 		
 		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
 			pixels.add(new EFieldPoint(new Point2D(i % WINDOW_WIDTH, i / WINDOW_WIDTH)));
-//			pixelImgs.add(new Rectangle(i % WINDOW_WIDTH, i / WINDOW_WIDTH, 1, 1));
-//			
-//			winDisplay.getChildren().add(pixelImgs.get(i));
 		}
 
 		// Setup button window.
 		Label lblEleConst = new Label("Coulomb's Constant: ");
-		Label lblMinusColour = new Label("Small Potential Colour (Hex): ");
-		Label lblPlusColour = new Label("High Potential Colour (Hex): ");
 		Label lblCharge = new Label("Particle Charge: ");
 		lblEleConst.setTextAlignment(TextAlignment.RIGHT);
-		lblMinusColour.setTextAlignment(TextAlignment.RIGHT);
-		lblPlusColour.setTextAlignment(TextAlignment.RIGHT);
 		lblCharge.setTextAlignment(TextAlignment.RIGHT);
 		lblEleConst.setTextFill(Color.WHITE);
-		lblMinusColour.setTextFill(Color.WHITE);
-		lblPlusColour.setTextFill(Color.WHITE);
 		lblCharge.setTextFill(Color.WHITE);
 
 		txtEleConst = new AppTextField("Coulomb's Constant");
-		txtMinusColour = new AppTextField("Small Potential Colour");
-		txtPlusColour = new AppTextField("Big Potential Colour");
 		txtCharge = new AppTextField("Particle Charge");
 
 		btnStart = new AppButton("Start");
@@ -218,11 +204,6 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 
 		Group dispGroup = new Group();
 		winDisplay.getChildren().clear();
-//		for (int i = 0; i < WINDOW_HEIGHT * WINDOW_WIDTH / 2; i++) {
-//			pixelImgs.get(i).setFill(pixels.get(i).getColour());
-//			
-//			winDisplay.getChildren().add(pixelImgs.get(i));
-//		}
 		
 		for (Particle p : particles) {
 			dispGroup.getChildren().add(p.getImageView());
@@ -260,32 +241,6 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 			alert.showAndWait();
 			return;
 		}
-
-		if (!txtMinusColour.tryGetColour()) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Colour Hex Error!");
-			alert.setHeaderText(null);
-			alert.setContentText("The specified hex colour for small potentials is an invalid hex value." + 
-					NEWLINE + "Use only numbers and lowercase letters.");
-
-			alert.showAndWait();
-			return;
-		}
-		
-		if (!txtPlusColour.tryGetColour()) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Colour Hex Error!");
-			alert.setHeaderText(null);
-			alert.setContentText("The specified hex colour for high potentials is an invalid hex value." + 
-					NEWLINE + "Use only numbers and lowercase letters.");
-
-			alert.showAndWait();
-			return;
-		}
-		
-		//Creates the colour gradient for this iteration of the program.
-		ColourGradient gradient = new ColourGradient(hexToColour(txtMinusColour.getText()), hexToColour(txtPlusColour.getText()));
-
 		redrawScene();
 
 		// Disable start button and enable the rest.
@@ -305,24 +260,12 @@ public class ClsFld implements pkg_main.IConstants, IElectrostatic {
 				// Check if the animation is paused before doing any calculations.
 				if (!isPaused) {
 					// Apply all forces.
-					double minPot = 0;
-					double maxPot = 0;
 					for (EFieldPoint e : pixels) {
 						e.setPotential(0);
 						for (Particle p : particles) {
 							double dist = e.getPosition().subtract(p.getPosition()).magnitude();
 							e.setPotential(e.getPotential() + eleConst * p.getCharge() / dist);
 						}
-						
-						if (e.getPotential() < minPot) {
-							minPot = e.getPotential();
-						} else if (e.getPotential() > maxPot) {
-							maxPot = e.getPotential();
-						}
-					}
-					double diff = maxPot - minPot;
-					for (EFieldPoint e : pixels) {
-						e.setColour(gradient.getColour((e.getPotential() - minPot) / diff));
 					}
 					updateAll();
 					redrawScene();
