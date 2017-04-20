@@ -1,8 +1,7 @@
-//TODO: CHECK PROGRAM FUNCTION
 /** Program Function; To generate a series of animations relating to various physics topics.
 *** Creator; Paul Gaudnik, Mark Jarjour, Michael Luger
-*** Submission Date; April 18th, 2017
-*** Date Last Modified; April 17th, 2017
+*** Submission Date; April 20th, 2017
+*** Date Last Modified; April 20th, 2017
 **/
 
 package pkg_main;
