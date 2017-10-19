@@ -1,1 +1,1 @@
-Integrative Project
+A Java program with a Graphical User Interface that simulates several concepts in physics, specifically in the topics of Mechnics and Electricity & Magnetism.
